@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 
 class OSLinkedServicesSteps
 {
-    public $step_code = 'booking__linked_service_datepicker';
+    public $step_code = 'bundled_services_datepicker';
 
     public function __construct()
     {
@@ -35,16 +35,12 @@ class OSLinkedServicesSteps
     public function should_step_be_skipped(bool $skip, string $step_code, OsCartModel $cart, OsCartItemModel $cart_item, OsBookingModel $booking): bool
     {
         if ($step_code == $this->step_code) {
-            if($booking->is_part_of_bundle()){
+            $skip = true;
+            $aci = OsStepsHelper::$active_cart_item;
+            $is_bundle = OsStepsHelper::$active_cart_item->is_bundle();
+            if(OsStepsHelper::$active_cart_item->is_bundle()){
                 // bundle bookings have preset duration, no need to ask customer for it
-                $skip = true;
-            }
-
-            $service = new OsServiceModel($booking->service_id);
-            $linked_services = $service->get_meta_by_key('linked_services');
-            $linked_services = $linked_services ? json_decode($linked_services) : [];
-            if (empty($linked_services)) {
-                $skip = true;
+                $skip = false;
             }
         }
         return $skip;
@@ -52,21 +48,25 @@ class OSLinkedServicesSteps
 
     public function add_linked_service_step_code(array $steps): array
     {
-        $steps[$this->step_code] = ['after' => 'datepicker'];
+        $steps[$this->step_code] = [];
         return $steps;
     }
 
     public function load_step_linked_service_date_picker($step_code, $format = 'json')
     {
         if ($step_code == $this->step_code) {
-            $service = new OsServiceModel(OsStepsHelper::$booking_object->service_id);
 
-            $linked_services = $service->get_meta_by_key('linked_services');
-            $linked_services = json_decode($linked_services); //linked services will be present always, otherwise, this step would have skipped.
+            $active_cart_item = OsStepsHelper::$active_cart_item;
+            $item_data__str = $active_cart_item->item_data;
+            $item_data = json_decode($item_data__str);
+            $bundle_id=$item_data->bundle_id;
+            $bundle = new OsBundleModel($bundle_id);
+            $services = $bundle->get_services();
+            $service = new OsServiceModel($services[0]->id); //todo: foreach for all services to be inserted here.
 
             $linked_service_datepicker = new OSLinkedServicesController();
             $booking = new OsBookingModel(); //OsStepsHelper::$booking_object;
-            $booking->service_id = 2;
+            $booking->service_id = $service->id;
             $booking->agent_id = OsStepsHelper::$booking_object->agent_id;
             $booking->location_id = OsStepsHelper::$booking_object->location_id;
             $linked_service_datepicker->vars['booking'] = $booking;
