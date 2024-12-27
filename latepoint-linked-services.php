@@ -82,6 +82,7 @@ final class OSLinkedServices
         include_once 'includes/class-admin-settings.php';
         include_once 'includes/class-steps.php';
         include_once 'includes/class-helper.php';
+        include_once 'includes/os-linked-services-calendar-helper.php';
     }
 
     /**
