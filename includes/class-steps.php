@@ -61,16 +61,27 @@ class OSLinkedServicesSteps
         if ($step_code == $this->step_code) {
             $service = new OsServiceModel(OsStepsHelper::$booking_object->service_id);
 
-            $linked_services = $service->get_meta_by_key('linked_services');
-            $linked_services = json_decode($linked_services); //linked services will be present always, otherwise, this step would have skipped.
+            $linked_services__ids = $service->get_meta_by_key('linked_services');
+            $linked_services__ids = json_decode($linked_services__ids); //linked services will be present always, otherwise, this step would have skipped.
+
+            $linked_services = [];
+            foreach ($linked_services__ids as $id){
+                $linked_services[] = new OsServiceModel($id);
+            }
+
+
 
             $linked_service_datepicker = new OSLinkedServicesController();
+
             $booking = new OsBookingModel(); //OsStepsHelper::$booking_object;
             $booking->service_id = 2;
             $booking->agent_id = OsStepsHelper::$booking_object->agent_id;
             $booking->location_id = OsStepsHelper::$booking_object->location_id;
-            $linked_service_datepicker->vars['booking'] = $booking;
-            $linked_service_datepicker->vars['cart'] = OsStepsHelper::$cart_object;
+            $linked_service_datepicker->vars['linked_services_booking'] = $booking;
+//            $linked_service_datepicker->vars['linked_services'] = $linked_services;
+
+            $linked_service_datepicker->vars['booking']           = OsStepsHelper::$booking_object;
+            $linked_service_datepicker->vars['cart']              = OsStepsHelper::$cart_object;
             $linked_service_datepicker->vars['current_step_code'] = $step_code;
             $linked_service_datepicker->vars['restrictions']      = OsStepsHelper::$restrictions;
             $linked_service_datepicker->vars['presets']           = OsStepsHelper::$presets;
@@ -84,31 +95,12 @@ class OSLinkedServicesSteps
                 'is_last_step' => OsStepsHelper::is_last_step($step_code),
                 'is_pre_last_step' => OsStepsHelper::is_pre_last_step($step_code)]
             );
-
-//            $steps_controller                            = new OsStepsController();
-//            $steps_controller->vars                      = OsStepsHelper::$vars_for_view;
-//            $steps_controller->vars['booking']           = OsStepsHelper::$booking_object;
-//            $steps_controller->vars['cart']              = OsStepsHelper::$cart_object;
-//            $steps_controller->vars['current_step_code'] = $step_code;
-//            $steps_controller->vars['restrictions']      = OsStepsHelper::$restrictions;
-//            $steps_controller->vars['presets']           = OsStepsHelper::$presets;
-//            $steps_controller->set_layout( 'none' );
-//            $steps_controller->set_return_format( $format );
-//            $steps_controller->format_render('_booking_datepicker', [], [
-//                    'step_code' => $step_code,
-//                    'show_next_btn' => OsStepsHelper::can_step_show_next_btn($step_code),
-//                    'show_prev_btn' => OsStepsHelper::can_step_show_prev_btn($step_code),
-//                    'is_first_step' => OsStepsHelper::is_first_step($step_code),
-//                    'is_last_step' => OsStepsHelper::is_last_step($step_code),
-//                    'is_pre_last_step' => OsStepsHelper::is_pre_last_step($step_code)]
-//            );
-
         }
     }
 
     public function step_show_btn_rules($step_show_btn_rules, $step_code)
     {
-        $step_show_btn_rules[$this->step_code] = false;
+        $step_show_btn_rules[$this->step_code] = true;
         return $step_show_btn_rules;
     }
 

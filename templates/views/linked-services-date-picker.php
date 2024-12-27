@@ -6,6 +6,7 @@
  * @var $restrictions array
  * @var $presets array
  * @var $calendar_start_date string
+ * @var $linked_services_booking OsBookingModel
  */
 
 ?>
@@ -16,14 +17,14 @@
     echo OsStepsHelper::get_formatted_extra_step_content($current_step_code, 'before');
     ?>
     <div class="os-dates-w">
-        <?php OsCalendarHelper::generate_calendar_for_datepicker_step(\LatePoint\Misc\BookingRequest::create_from_booking_model($booking), new OsWpDateTime($calendar_start_date), ['timezone_name' => OsTimeHelper::get_timezone_name_from_session(), 'consider_cart_items' => true]); ?>
+        <?php OsCalendarHelper::generate_calendar_for_datepicker_step(\LatePoint\Misc\BookingRequest::create_from_booking_model($linked_services_booking), new OsWpDateTime($calendar_start_date), ['timezone_name' => OsTimeHelper::get_timezone_name_from_session(), 'consider_cart_items' => true]); ?>
     </div>
     <div class="time-selector-w <?php echo OsStepsHelper::hide_unavailable_slots() ? 'hide-not-available-slots' : ''; ?> <?php echo 'time-system-'.OsTimeHelper::get_time_system(); ?> <?php echo (OsSettingsHelper::is_on('show_booking_end_time')) ? 'with-end-time' : 'without-end-time'; ?> style-<?php echo OsStepsHelper::get_time_pick_style(); ?>">
         <div class="times-header">
             <div class="th-line"></div>
             <div class="times-header-label">
                 <?php _e('Pick a slot for', 'latepoint'); ?> <span></span>
-                <?php do_action('latepoint_step_datepicker_appointment_time_header_label', $booking); ?>
+                <?php do_action('latepoint_step_datepicker_linked_services_appointment_time_header_label', $linked_services_booking); ?>
             </div>
             <div class="th-line"></div>
         </div>

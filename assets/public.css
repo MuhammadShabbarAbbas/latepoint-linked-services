@@ -1,0 +1,20 @@
+.latepoint-booking-form-element .step-linked-service-datepicker-w .time-selector-w:not(.style-timeline) .lsdp-timepicker-trigger:not(.selected):hover .dp-capacity{
+    display: block;
+}
+
+.latepoint-booking-form-element .step-linked-service-datepicker-w .dp-capacity {
+    position: absolute;
+    top: 0px;
+    left: 50%;
+    transform: translate3d(-50%, -100%, 0);
+    background-color: #111;
+    padding: 4px 6px;
+    color: #fff;
+    font-weight: 600;
+    display: none;
+    white-space: nowrap;
+    z-index: 9999;
+    font-size: 15px;
+    animation: 0.1s ease latepointAvailabilityPopup;
+    animation-fill-mode: both;
+}
