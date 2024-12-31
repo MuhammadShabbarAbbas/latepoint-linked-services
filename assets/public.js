@@ -22,7 +22,7 @@ window.os_linked_services_public = window.os_linked_services_public || {};
         $booking_form_element.on('click', '.os-linked-services-months .os-linked-services-day', day_clicked);
         $booking_form_element.off('keydown', '.os-linked-services-months .os-linked-services-day', day_clicked);
         $booking_form_element.on('keydown', '.os-linked-services-months .os-linked-services-day', day_clicked);
-        // if ($booking_form_element.find('input[name="booking[start_date]"]').val()) $booking_form_element.find('.os-linked-services-day[data-date="' + $booking_form_element.find('input[name="booking[start_date]"]').val() + '"]').trigger('click');
+        if ($booking_form_element.find('input[name="booking[linked_service_start_date]"]').val()) $booking_form_element.find('.os-linked-services-day[data-date="' + $booking_form_element.find('input[name="booking[linked_service_start_date]"]').val() + '"]').trigger('click');
     }
 
     function calendar_set_month_label($booking_form_element) {
