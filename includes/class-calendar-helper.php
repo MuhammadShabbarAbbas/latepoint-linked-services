@@ -1,5 +1,92 @@
 <?php
-class OsLinkedServiceHelper{
+/*
+ * Copyright (c) 2022 LatePoint LLC. All rights reserved.
+ */
+
+
+class OsLinkedServicesCalendarHelper {
+
+    /**
+     * Get list of statuses which should not appear on calendar
+     *
+     * @return array
+     */
+    public static function get_booking_statuses_hidden_from_calendar(): array {
+        $statuses = explode( ',', OsSettingsHelper::get_settings_value( 'calendar_hidden_statuses', '' ) );
+
+        /**
+         * Get list of statuses which bookings should not appear on calendar
+         *
+         * @param {array} $statuses array of status codes that will be hidden from calendar
+         * @returns {array} The filtered array of status codes
+         *
+         * @since 4.7.0
+         * @hook latepoint_get_booking_statuses_hidden_from_calendar
+         *
+         */
+        return apply_filters( 'latepoint_get_booking_statuses_hidden_from_calendar', $statuses );
+    }
+
+
+    /**
+     * Returns an array of booking status codes to be displayed on calendar
+     *
+     * @return {array} The array of statuses
+     */
+    public static function get_booking_statuses_to_display_on_calendar(): array {
+        $hidden_statuses   = self::get_booking_statuses_hidden_from_calendar();
+        $all_statuses      = OsBookingHelper::get_statuses_list();
+        $eligible_statuses = [];
+        foreach ( $all_statuses as $status_code => $status_label ) {
+            if ( ! in_array( $status_code, $hidden_statuses ) ) {
+                $eligible_statuses[] = $status_code;
+            }
+        }
+
+        /**
+         * Returns an array of booking status codes to be displayed on calendar
+         *
+         * @param {array} array of statuses
+         *
+         * @returns {array} The array of statuses
+         *
+         * @since 4.7.0
+         * @hook latepoint_get_booking_statuses_to_display_on_calendar
+         *
+         */
+        return apply_filters( 'latepoint_get_booking_statuses_to_display_on_calendar', $eligible_statuses );
+    }
+
+    public static function is_external_calendar_enabled( string $external_calendar_code ): bool {
+        return OsSettingsHelper::is_on( 'enable_' . $external_calendar_code );
+    }
+
+    public static function get_list_of_external_calendars( $enabled_only = false ) {
+        $external_calendars = [];
+
+        /**
+         * Returns an array of external calendars
+         *
+         * @param {array} array of calendars
+         * @param {bool} filter to return only calendars that are enabled
+         *
+         * @returns {array} The array of external calendars
+         *
+         * @since 4.7.0
+         * @hook latepoint_list_of_external_calendars
+         *
+         */
+        return apply_filters( 'latepoint_list_of_external_calendars', $external_calendars, $enabled_only );
+    }
+
+
+    /**
+     * @param \LatePoint\Misc\BookingRequest $booking_request
+     * @param DateTime $target_date
+     * @param array $settings
+     *
+     * @return void
+     */
     public static function generate_calendar_for_datepicker_step( \LatePoint\Misc\BookingRequest $booking_request, DateTime $target_date, array $settings = [] ) {
         $defaults = [
             'exclude_booking_ids'         => [],
@@ -29,12 +116,12 @@ class OsLinkedServiceHelper{
                 <div class="current-year"><?php echo $target_date->format( 'Y' ); ?></div>
             </div>
             <div class="os-month-control-buttons-w">
-                <button type="button" class="os-month-prev-btn disabled" data-route="<?php echo OsRouterHelper::build_route_name( 'steps', 'load_datepicker_month' ) ?>">
+                <button type="button" class="os-linked-services-month-prev-btn disabled" data-route="<?php echo OsRouterHelper::build_route_name( 'steps', 'load_datepicker_month' ) ?>">
                     <i class="latepoint-icon latepoint-icon-arrow-left"></i></button>
                 <?php if ( $settings['layout'] == 'horizontal' ) {
                     echo '<button class="latepoint-btn latepoint-btn-outline os-month-today-btn" data-year="' . $today_date->format( 'Y' ) . '" data-month="' . $today_date->format( 'n' ) . '" data-date="' . $today_date->format( 'Y-m-d' ) . '">' . __( 'Today', 'latepoint' ) . '</button>';
                 } ?>
-                <button type="button" class="os-month-next-btn" data-route="<?php echo OsRouterHelper::build_route_name( 'steps', 'load_datepicker_month' ) ?>">
+                <button type="button" class="os-linked-services-month-next-btn" data-route="<?php echo OsRouterHelper::build_route_name( 'steps', 'load_datepicker_month' ) ?>">
                     <i class="latepoint-icon latepoint-icon-arrow-right"></i></button>
             </div>
         </div>
@@ -242,7 +329,7 @@ class OsLinkedServiceHelper{
             // TODO use work minutes instead to calculate minimum gap
             $minimum_slot_gap = \LatePoint\Misc\BookingSlot::find_minimum_gap_between_slots( $booking_slots );
 
-            $day_class = 'os-day os-day-current week-day-' . strtolower( $day_date->format( 'N' ) );
+            $day_class = 'os-linked-services-day os-day-current week-day-' . strtolower( $day_date->format( 'N' ) );
             $tabbable = true;
             if ( empty( $bookable_minutes ) ) {
                 $day_class .= ' os-not-available';
@@ -272,7 +359,7 @@ class OsLinkedServiceHelper{
                 $day_class .= ' os-one-slot-only';
             }
             if ( ( $day_date->format( 'Y-m-d' ) == $target_date->format( 'Y-m-d' ) ) && $settings['highlight_target_date'] ) {
-                $day_class .= ' selected';
+                $day_class .= ' selected_2';
             }
             ?>
 
@@ -288,7 +375,7 @@ class OsLinkedServiceHelper{
                                                              data-interval="<?php echo $selectable_time_interval; ?>">
                 <?php if ( $settings['layout'] == 'horizontal' ) { ?>
                     <div
-                            class="os-day-weekday"><?php echo OsBookingHelper::get_weekday_name_by_number( $day_date->format( 'N' ) ); ?></div><?php } ?>
+                        class="os-day-weekday"><?php echo OsBookingHelper::get_weekday_name_by_number( $day_date->format( 'N' ) ); ?></div><?php } ?>
                 <div class="os-day-box">
                     <?php
                     if ( $bookable_slots_count && ! $settings['hide_slot_availability_count'] ) {
@@ -355,6 +442,59 @@ class OsLinkedServiceHelper{
             <?php
 
             // DAYS LOOP END
+        }
+        echo '</div></div>';
+    }
+
+    // Used on holiday/custom schedule generator lightbox
+    public static function generate_monthly_calendar_days_only( $target_date_string = 'today', $highlight_target_date = false ) {
+        $target_date    = new OsWpDateTime( $target_date_string );
+        $calendar_start = clone $target_date;
+        $calendar_start->modify( 'first day of this month' );
+        $calendar_end = clone $target_date;
+        $calendar_end->modify( 'last day of this month' );
+
+        $weekday_for_first_day_of_month = $calendar_start->format( 'N' ) - 1;
+        $weekday_for_last_day_of_month  = $calendar_end->format( 'N' ) - 1;
+
+
+        if ( $weekday_for_first_day_of_month > 0 ) {
+            $calendar_start->modify( '-' . $weekday_for_first_day_of_month . ' days' );
+        }
+
+        if ( $weekday_for_last_day_of_month < 6 ) {
+            $days_to_add = 6 - $weekday_for_last_day_of_month;
+            $calendar_end->modify( '+' . $days_to_add . ' days' );
+        }
+
+        echo '<div class="os-monthly-calendar-days-w" data-calendar-year="' . $target_date->format( 'Y' ) . '" data-calendar-month="' . $target_date->format( 'n' ) . '" data-calendar-month-label="' . OsUtilHelper::get_month_name_by_number( $target_date->format( 'n' ) ) . '">
+            <div class="os-monthly-calendar-days">';
+        for ( $day_date = clone $calendar_start; $day_date <= $calendar_end; $day_date->modify( '+1 day' ) ) {
+            $is_today       = ( $day_date->format( 'Y-m-d' ) == OsTimeHelper::today_date() ) ? true : false;
+            $is_day_in_past = ( $day_date->format( 'Y-m-d' ) < OsTimeHelper::today_date() ) ? true : false;
+            $day_class      = 'os-linked-services-day os-day-current week-day-' . strtolower( $day_date->format( 'N' ) );
+
+            if ( $day_date->format( 'm' ) > $target_date->format( 'm' ) ) {
+                $day_class .= ' os-month-next';
+            }
+            if ( $day_date->format( 'm' ) < $target_date->format( 'm' ) ) {
+                $day_class .= ' os-month-prev';
+            }
+
+            if ( $is_today ) {
+                $day_class .= ' os-today';
+            }
+            if ( $highlight_target_date && ( $day_date->format( 'Y-m-d' ) == $target_date->format( 'Y-m-d' ) ) ) {
+                $day_class .= ' selected';
+            }
+            if ( $is_day_in_past ) {
+                $day_class .= ' os-day-passed';
+            } ?>
+        <div class="<?php echo $day_class; ?>" data-date="<?php echo $day_date->format( 'Y-m-d' ); ?>">
+            <div class="os-day-box">
+                <div class="os-day-number"><?php echo $day_date->format( 'j' ); ?></div>
+            </div>
+            </div><?php
         }
         echo '</div></div>';
     }
