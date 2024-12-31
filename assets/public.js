@@ -25,6 +25,10 @@ window.os_linked_services_public = window.os_linked_services_public || {};
         if ($booking_form_element.find('input[name="booking[start_date]"]').val()) $booking_form_element.find('.os-linked-services-day[data-date="' + $booking_form_element.find('input[name="booking[start_date]"]').val() + '"]').trigger('click');
     }
 
+    function calendar_set_month_label($booking_form_element) {
+        $booking_form_element.find('.os-current-month-label .current-year').text($booking_form_element.find('.os-linked-services-monthly-calendar-days-w.active').data('calendar-year'));
+        $booking_form_element.find('.os-current-month-label .current-month').text($booking_form_element.find('.os-linked-services-monthly-calendar-days-w.active').data('calendar-month-label'));
+    }
 
     function init_monthly_calendar_navigation($booking_form_element = false) {
         if (!$booking_form_element) return;
@@ -33,7 +37,7 @@ window.os_linked_services_public = window.os_linked_services_public || {};
             var next_month_route_name = jQuery(this).data('route');
             if ($booking_form_element.find('.os-linked-services-monthly-calendar-days-w.active + .os-linked-services-monthly-calendar-days-w').length) {
                 $booking_form_element.find('.os-linked-services-monthly-calendar-days-w.active').removeClass('active').next('.os-linked-services-monthly-calendar-days-w').addClass('active');
-                latepoint_calendar_set_month_label($booking_form_element);
+                calendar_set_month_label($booking_form_element);
             } else {
                 // TODO add condition to check maximum number months to call into the future
                 if (true) {
@@ -68,7 +72,7 @@ window.os_linked_services_public = window.os_linked_services_public || {};
                             if (data.status === "success") {
                                     $booking_form_element.find('.os-linked-services-months').append(data.message);
                                 $booking_form_element.find('.os-linked-services-monthly-calendar-days-w.active').removeClass('active').next('.os-linked-services-monthly-calendar-days-w').addClass('active');
-                                latepoint_calendar_set_month_label($booking_form_element);
+                                calendar_set_month_label($booking_form_element);
                             } else {
                                 // console.log(data.message);
                             }
@@ -84,7 +88,7 @@ window.os_linked_services_public = window.os_linked_services_public || {};
             var $booking_form_element = jQuery(this).closest('.latepoint-booking-form-element');
             if ($booking_form_element.find('.os-linked-services-monthly-calendar-days-w.active').prev('.os-linked-services-monthly-calendar-days-w').length) {
                 $booking_form_element.find('.os-linked-services-monthly-calendar-days-w.active').removeClass('active').prev('.os-linked-services-monthly-calendar-days-w').addClass('active');
-                latepoint_calendar_set_month_label($booking_form_element);
+                calendar_set_month_label($booking_form_element);
             }
             latepoint_calendar_show_or_hide_prev_next_buttons($booking_form_element);
             return false;
