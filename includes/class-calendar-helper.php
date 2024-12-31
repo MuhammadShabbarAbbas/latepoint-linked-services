@@ -95,6 +95,8 @@ class OsLinkedServicesCalendarHelper {
             'layout'                      => 'classic',
             'highlight_target_date'       => false,
             'consider_cart_items'         => false,
+            'earliest_possible_booking'         => false,
+            'latest_possible_booking'         => false,
         ];
 
         $settings = OsUtilHelper::merge_default_atts( $defaults, $settings );
@@ -148,13 +150,15 @@ class OsLinkedServicesCalendarHelper {
             'timezone_name'         => $settings['timezone_name'],
             'highlight_target_date' => $settings['highlight_target_date'],
             'exclude_booking_ids'   => $settings['exclude_booking_ids'],
-            'consider_cart_items'   => $settings['consider_cart_items']
+            'consider_cart_items'   => $settings['consider_cart_items'],
+            'earliest_possible_booking'   => $settings['earliest_possible_booking'],
+            'latest_possible_booking'   => $settings['latest_possible_booking']
         ];
 
 
         // if it's not from admin - blackout dates that are not available to select due to date restrictions in settings
-        $month_settings['earliest_possible_booking'] = OsSettingsHelper::get_settings_value( 'earliest_possible_booking', false );
-        $month_settings['latest_possible_booking']   = OsSettingsHelper::get_settings_value( 'latest_possible_booking', false );
+//        $month_settings['earliest_possible_booking'] = OsSettingsHelper::get_settings_value( 'earliest_possible_booking', false );
+//        $month_settings['latest_possible_booking']   = OsSettingsHelper::get_settings_value( 'latest_possible_booking', false );
 
         self::generate_single_month( $booking_request, $target_date, $month_settings );
         for ( $i = 1; $i <= $settings['number_of_months_to_preload']; $i ++ ) {

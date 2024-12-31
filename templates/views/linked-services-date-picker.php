@@ -8,7 +8,11 @@
  * @var $calendar_start_date string
  * @var $linked_services_booking OsBookingModel
  */
-
+$end_date = new DateTime($booking->start_date);
+// Add one week
+$end_date->modify('+1 week');
+// Display the updated date and time
+$end_date = $end_date->format('Y-m-d');
 ?>
 
 <div class="step-datepicker-w latepoint-step-content" data-step-code="<?php echo $current_step_code; ?>"  data-clear-action="clear_step_datepicker">
@@ -17,7 +21,7 @@
     echo OsStepsHelper::get_formatted_extra_step_content($current_step_code, 'before');
     ?>
     <div class="os-dates-w">
-        <?php OsLinkedServicesCalendarHelper::generate_calendar_for_datepicker_step(\LatePoint\Misc\BookingRequest::create_from_booking_model($linked_services_booking), new OsWpDateTime($calendar_start_date), ['timezone_name' => OsTimeHelper::get_timezone_name_from_session(), 'consider_cart_items' => true]); ?>
+        <?php OsLinkedServicesCalendarHelper::generate_calendar_for_datepicker_step(\LatePoint\Misc\BookingRequest::create_from_booking_model($linked_services_booking), new OsWpDateTime($calendar_start_date), ['timezone_name' => OsTimeHelper::get_timezone_name_from_session(), 'consider_cart_items' => true, 'earliest_possible_booking'=> $booking->start_date, 'latest_possible_booking' => $end_date]); ?>
     </div>
     <div class="linked-service-time-selector-w <?php echo OsStepsHelper::hide_unavailable_slots() ? 'hide-not-available-slots' : ''; ?> <?php echo 'time-system-'.OsTimeHelper::get_time_system(); ?> <?php echo (OsSettingsHelper::is_on('show_booking_end_time')) ? 'with-end-time' : 'without-end-time'; ?> style-<?php echo OsStepsHelper::get_time_pick_style(); ?>">
         <div class="times-header">
