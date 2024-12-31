@@ -141,7 +141,7 @@ class OsLinkedServicesCalendarHelper {
                 ?>
             </div>
         <?php } ?>
-        <div class="os-months">
+        <div class="os-linked-services-months">
         <?php
         $month_settings = [
             'active'                => true,
@@ -265,7 +265,7 @@ class OsLinkedServicesCalendarHelper {
 
         $active_class           = $settings['active'] ? 'active' : '';
         $hide_single_slot_class = OsStepsHelper::hide_timepicker_when_one_slot_available() ? 'hide-if-single-slot' : '';
-        echo '<div class="os-monthly-calendar-days-w ' . $hide_single_slot_class . ' ' . $active_class . '" data-calendar-layout="' . $settings['layout'] . '" data-calendar-year="' . $target_date->format( 'Y' ) . '" data-calendar-month="' . $target_date->format( 'n' ) . '" data-calendar-month-label="' . OsUtilHelper::get_month_name_by_number( $target_date->format( 'n' ) ) . '"><div class="os-monthly-calendar-days">';
+        echo '<div class="os-linked-services-monthly-calendar-days-w ' . $hide_single_slot_class . ' ' . $active_class . '" data-calendar-layout="' . $settings['layout'] . '" data-calendar-year="' . $target_date->format( 'Y' ) . '" data-calendar-month="' . $target_date->format( 'n' ) . '" data-calendar-month-label="' . OsUtilHelper::get_month_name_by_number( $target_date->format( 'n' ) ) . '"><div class="os-monthly-calendar-days">';
 
         // DAYS LOOP START
         for ( $day_date = clone $calendar_start; $day_date <= $calendar_end; $day_date->modify( '+1 day' ) ) {
@@ -467,7 +467,7 @@ class OsLinkedServicesCalendarHelper {
             $calendar_end->modify( '+' . $days_to_add . ' days' );
         }
 
-        echo '<div class="os-monthly-calendar-days-w" data-calendar-year="' . $target_date->format( 'Y' ) . '" data-calendar-month="' . $target_date->format( 'n' ) . '" data-calendar-month-label="' . OsUtilHelper::get_month_name_by_number( $target_date->format( 'n' ) ) . '">
+        echo '<div class="os-linked-services-monthly-calendar-days-w" data-calendar-year="' . $target_date->format( 'Y' ) . '" data-calendar-month="' . $target_date->format( 'n' ) . '" data-calendar-month-label="' . OsUtilHelper::get_month_name_by_number( $target_date->format( 'n' ) ) . '">
             <div class="os-monthly-calendar-days">';
         for ( $day_date = clone $calendar_start; $day_date <= $calendar_end; $day_date->modify( '+1 day' ) ) {
             $is_today       = ( $day_date->format( 'Y-m-d' ) == OsTimeHelper::today_date() ) ? true : false;

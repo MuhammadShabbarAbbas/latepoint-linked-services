@@ -645,7 +645,12 @@
     right: 10px;
 }
 
-
+.latepoint-booking-form-element .os-linked-services-monthly-calendar-days-w {
+    display: none;
+}
+.latepoint-booking-form-element .os-linked-services-monthly-calendar-days-w.active {
+    display: block;
+}
 
 .reschedule-calendar-wrapper .os-linked-services-monthly-calendar-days-w {
     display: none;
