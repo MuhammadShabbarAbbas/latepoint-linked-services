@@ -33,16 +33,98 @@ class OSLinkedServicesSteps
 
         add_filter('latepoint_booking_summary_formatted_booking_start_datetime', [$this, 'add_linked_service_datetime_to_active_cart_item'], 10, 2);
 
+
+        add_filter('latepoint_model_set_data', [$this, 'add_linked_service_data_to_booking'], 10, 2);
+
     }
 
-    public function add_linked_service_datetime_to_active_cart_item($booking_start_datetime, $booking){
+    public function add_linked_service_data_to_booking($booking_object, $data)
+    {
+        if (isset($data['linked_service_start_date'])) {
+            $booking_object->linked_service_start_date = $data['linked_service_start_date'];
+        }
+        if (isset($data['linked_service_start_time'])) {
+            $booking_object->linked_service_start_time = $data['linked_service_start_time'];
+        }
+
+        if (isset($data['linked_service_start_date']) && isset($data['linked_service_start_time']) && isset($data['linked_service_id'])) {
+            $service = new OsServiceModel($booking_object->linked_service_id);
+            $booking_object->linked_service_end_date = $this->calculate_end_date($service, $booking_object);
+            $booking_object->linked_service_end_time = $this->calculate_end_time($service, $booking_object);
+        }
+    }
+
+    public function calculate_end_date($service, $booking_object)
+    {
+
+        if (((int)$booking_object->linked_service_start_time + (int)$service->duration) >= (24 * 60)) {
+            $date_obj = new OsWpDateTime($booking_object->linked_service_start_date);
+            $end_date = $date_obj->modify('+1 day')->format('Y-m-d');
+        } else {
+            $end_date = $booking_object->linked_service_start_date;
+        }
+
+        return $end_date;
+    }
+
+
+    public function calculate_end_time($service, $booking_object)
+    {
+        $end_time = (int)$booking_object->start_time + (int)$service->duration;
+        // continues to next day?
+        if ($end_time > (24 * 60)) {
+            $end_time = $end_time - (24 * 60);
+        }
+        return $end_time;
+    }
+
+
+    public function add_linked_service_datetime_to_active_cart_item($booking_start_datetime, $booking)
+    {
+        if (isset($booking->linked_service_start_date)) {
+            $booking_start_datetime .= ',<br/>' . $this->get_nice_start_datetime($booking);
+        }
+
 //        return json_encode($booking);
         return $booking_start_datetime;
     }
+
+
+    public function get_nice_start_datetime($booking, bool $hide_if_today = true, bool $hide_year_if_current = true): string
+    {
+        if ($hide_if_today && $booking->linked_service_start_date == OsTimeHelper::today_date('Y-m-d')) {
+            $date = __('Today', 'latepoint');
+        } else {
+            $date = $this->get_nice_start_date($booking, $hide_year_if_current);
+        }
+
+        return implode(', ', array_filter([$date, $this->get_nice_start_time($booking)]));
+    }
+
+    public function get_nice_start_date($booking, $hide_year_if_current = false)
+    {
+        $d = OsWpDateTime::os_createFromFormat("Y-m-d", $booking->linked_service_start_date);
+        if (!$d) {
+            return 'n/a';
+        }
+        if ($hide_year_if_current && ($d->format('Y') == OsTimeHelper::today_date('Y'))) {
+            $format = OsSettingsHelper::get_readable_date_format(true);
+        } else {
+            $format = OsSettingsHelper::get_readable_date_format();
+        }
+
+        return OsUtilHelper::translate_months($d->format($format));
+    }
+
+    public function get_nice_start_time($booking)
+    {
+        return OsTimeHelper::minutes_to_hours_and_minutes($booking->linked_service_start_time);
+    }
+
     public function should_step_be_skipped(bool $skip, string $step_code, OsCartModel $cart, OsCartItemModel $cart_item, OsBookingModel $booking): bool
     {
         if ($step_code == $this->step_code) {
-            if($booking->is_part_of_bundle()){
+            if ($booking->is_part_of_bundle()) {
                 // bundle bookings have preset duration, no need to ask customer for it
                 $skip = true;
             }
@@ -77,7 +159,6 @@ class OSLinkedServicesSteps
 //            }
 
 
-
             $linked_service_datepicker = new OsLinkedServicesDatePickerController();
 
             $booking = new OsBookingModel(); //OsStepsHelper::$booking_object;
@@ -87,20 +168,20 @@ class OSLinkedServicesSteps
             $linked_service_datepicker->vars['linked_services_booking'] = $booking;
 //            $linked_service_datepicker->vars['linked_services'] = $linked_services;
 
-            $linked_service_datepicker->vars['booking']           = OsStepsHelper::$booking_object;
-            $linked_service_datepicker->vars['cart']              = OsStepsHelper::$cart_object;
+            $linked_service_datepicker->vars['booking'] = OsStepsHelper::$booking_object;
+            $linked_service_datepicker->vars['cart'] = OsStepsHelper::$cart_object;
             $linked_service_datepicker->vars['current_step_code'] = $step_code;
-            $linked_service_datepicker->vars['restrictions']      = OsStepsHelper::$restrictions;
-            $linked_service_datepicker->vars['presets']           = OsStepsHelper::$presets;
+            $linked_service_datepicker->vars['restrictions'] = OsStepsHelper::$restrictions;
+            $linked_service_datepicker->vars['presets'] = OsStepsHelper::$presets;
             $linked_service_datepicker->set_layout('none');
             $linked_service_datepicker->set_return_format($format);
             $linked_service_datepicker->format_render('linked-services-date-picker', [], [
-                'step_code' => $step_code,
-                'show_next_btn' => OsStepsHelper::can_step_show_next_btn($step_code),
-                'show_prev_btn' => OsStepsHelper::can_step_show_prev_btn($step_code),
-                'is_first_step' => OsStepsHelper::is_first_step($step_code),
-                'is_last_step' => OsStepsHelper::is_last_step($step_code),
-                'is_pre_last_step' => OsStepsHelper::is_pre_last_step($step_code)]
+                    'step_code' => $step_code,
+                    'show_next_btn' => OsStepsHelper::can_step_show_next_btn($step_code),
+                    'show_prev_btn' => OsStepsHelper::can_step_show_prev_btn($step_code),
+                    'is_first_step' => OsStepsHelper::is_first_step($step_code),
+                    'is_last_step' => OsStepsHelper::is_last_step($step_code),
+                    'is_pre_last_step' => OsStepsHelper::is_pre_last_step($step_code)]
             );
         }
     }
