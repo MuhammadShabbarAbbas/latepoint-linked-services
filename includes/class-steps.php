@@ -40,6 +40,7 @@ class OSLinkedServicesSteps
 
     public function add_linked_service_data_to_booking($booking_object, $data)
     {
+        if(!is_array($data)) return $booking_object;
         if (isset($data['linked_service_start_date'])) {
             $booking_object->linked_service_start_date = $data['linked_service_start_date'];
         }
@@ -52,6 +53,7 @@ class OSLinkedServicesSteps
             $booking_object->linked_service_end_date = $this->calculate_end_date($service, $booking_object);
             $booking_object->linked_service_end_time = $this->calculate_end_time($service, $booking_object);
         }
+        return $booking_object;
     }
 
     public function calculate_end_date($service, $booking_object)
