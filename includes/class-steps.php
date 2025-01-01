@@ -107,7 +107,7 @@ class OSLinkedServicesSteps
 
     public function step_show_btn_rules($step_show_btn_rules, $step_code)
     {
-        $step_show_btn_rules[$this->step_code] = true;
+        $step_show_btn_rules[$this->step_code] = false;
         return $step_show_btn_rules;
     }
 
