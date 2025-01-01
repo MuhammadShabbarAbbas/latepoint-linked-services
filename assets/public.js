@@ -80,21 +80,32 @@ window.os_linked_services_public = window.os_linked_services_public || {};
                     });
                 }
             }
-            latepoint_calendar_show_or_hide_prev_next_buttons($booking_form_element);
+            calendar_show_or_hide_prev_next_buttons($booking_form_element);
             return false;
         });
         
-        $booking_form_element.find('.os-month-prev-btn').on('click', function () {
+        $booking_form_element.find('.os-linked-services-month-prev-btn').on('click', function () {
             var $booking_form_element = jQuery(this).closest('.latepoint-booking-form-element');
             if ($booking_form_element.find('.os-linked-services-monthly-calendar-days-w.active').prev('.os-linked-services-monthly-calendar-days-w').length) {
                 $booking_form_element.find('.os-linked-services-monthly-calendar-days-w.active').removeClass('active').prev('.os-linked-services-monthly-calendar-days-w').addClass('active');
                 calendar_set_month_label($booking_form_element);
             }
-            latepoint_calendar_show_or_hide_prev_next_buttons($booking_form_element);
+            calendar_show_or_hide_prev_next_buttons($booking_form_element);
             return false;
         });
     }
 
+    function calendar_show_or_hide_prev_next_buttons($booking_form_element) {
+        $booking_form_element.find('.os-current-month-label .current-year').text($booking_form_element.find('.os-linked-services-monthly-calendar-days-w.active .os-monthly-calendar-days').data('calendar-year'));
+        $booking_form_element.find('.os-current-month-label .current-month').text($booking_form_element.find('.os-linked-services-monthly-calendar-days-w.active .os-monthly-calendar-days').data('calendar-month-label'));
+
+        if ($booking_form_element.find('.os-linked-services-monthly-calendar-days-w.active').prev('.os-linked-services-monthly-calendar-days-w').length) {
+            $booking_form_element.find('.os-linked-services-month-prev-btn').removeClass('disabled');
+        } else {
+            $booking_form_element.find('.os-linked-services-month-prev-btn').addClass('disabled');
+        }
+    }
+    
     function init_timeslots($booking_form_element = false) {
         if (!$booking_form_element) return;
         $booking_form_element.off('click', '.dp-linked-service-timepicker-trigger', timeslot_clicked);

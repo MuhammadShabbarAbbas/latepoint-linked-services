@@ -30,8 +30,15 @@ class OSLinkedServicesSteps
 
         add_filter('latepoint_should_step_be_skipped', [$this, 'should_step_be_skipped'], 10, 5);
 
+
+        add_filter('latepoint_booking_summary_formatted_booking_start_datetime', [$this, 'add_linked_service_datetime_to_active_cart_item'], 10, 2);
+
     }
 
+    public function add_linked_service_datetime_to_active_cart_item($booking_start_datetime, $booking){
+//        return json_encode($booking);
+        return $booking_start_datetime;
+    }
     public function should_step_be_skipped(bool $skip, string $step_code, OsCartModel $cart, OsCartItemModel $cart_item, OsBookingModel $booking): bool
     {
         if ($step_code == $this->step_code) {
@@ -71,7 +78,7 @@ class OSLinkedServicesSteps
 
 
 
-            $linked_service_datepicker = new OSLinkedServicesController();
+            $linked_service_datepicker = new OsLinkedServicesDatePickerController();
 
             $booking = new OsBookingModel(); //OsStepsHelper::$booking_object;
             $booking->service_id = 2;

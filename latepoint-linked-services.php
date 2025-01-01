@@ -117,7 +117,7 @@ final class OSLinkedServices
     public function include_dependents()
     {
         //functions
-        include_once 'includes/class-linked-services-controller.php';
+        include_once 'includes/class-date-picker-controller.php';
     }
 
     /**

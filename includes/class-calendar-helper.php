@@ -118,12 +118,12 @@ class OsLinkedServicesCalendarHelper {
                 <div class="current-year"><?php echo $target_date->format( 'Y' ); ?></div>
             </div>
             <div class="os-month-control-buttons-w">
-                <button type="button" class="os-linked-services-month-prev-btn disabled" data-route="<?php echo OsRouterHelper::build_route_name( 'steps', 'load_datepicker_month' ) ?>">
+                <button type="button" class="os-linked-services-month-prev-btn disabled" data-route="<?php echo OsRouterHelper::build_route_name( 'LinkedServicesDatePicker', 'load_linked_services_datepicker_month' ) ?>">
                     <i class="latepoint-icon latepoint-icon-arrow-left"></i></button>
                 <?php if ( $settings['layout'] == 'horizontal' ) {
                     echo '<button class="latepoint-btn latepoint-btn-outline os-month-today-btn" data-year="' . $today_date->format( 'Y' ) . '" data-month="' . $today_date->format( 'n' ) . '" data-date="' . $today_date->format( 'Y-m-d' ) . '">' . __( 'Today', 'latepoint' ) . '</button>';
                 } ?>
-                <button type="button" class="os-linked-services-month-next-btn" data-route="<?php echo OsRouterHelper::build_route_name( 'steps', 'load_datepicker_month' ) ?>">
+                <button type="button" class="os-linked-services-month-next-btn" data-route="<?php echo OsRouterHelper::build_route_name( 'LinkedServicesDatePicker', 'load_linked_services_datepicker_month' ) ?>">
                     <i class="latepoint-icon latepoint-icon-arrow-right"></i></button>
             </div>
         </div>
