@@ -71,17 +71,17 @@ class OSLinkedServicesSteps
             $linked_services__ids = $service->get_meta_by_key('linked_services');
             $linked_services__ids = json_decode($linked_services__ids); //linked services will be present always, otherwise, this step would have skipped.
 
-            $linked_services = [];
-            foreach ($linked_services__ids as $id){
-                $linked_services[] = new OsServiceModel($id);
-            }
+//            $linked_services = [];
+//            foreach ($linked_services__ids as $id){
+//                $linked_services[] = new OsServiceModel($id);
+//            }
 
 
 
             $linked_service_datepicker = new OsLinkedServicesDatePickerController();
 
             $booking = new OsBookingModel(); //OsStepsHelper::$booking_object;
-            $booking->service_id = 2;
+            $booking->service_id = $linked_services__ids[0];
             $booking->agent_id = OsStepsHelper::$booking_object->agent_id;
             $booking->location_id = OsStepsHelper::$booking_object->location_id;
             $linked_service_datepicker->vars['linked_services_booking'] = $booking;
