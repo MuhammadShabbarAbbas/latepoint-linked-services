@@ -40,6 +40,7 @@ class OSLinkedServicesSteps
 
     public function add_linked_service_data_to_booking($booking_object, $data)
     {
+        //todo: look into this return further, as currently this is being called for settings model as well. 
         if(!is_array($data)) return $booking_object;
         if (isset($data['linked_service_start_date'])) {
             $booking_object->linked_service_start_date = $data['linked_service_start_date'];
