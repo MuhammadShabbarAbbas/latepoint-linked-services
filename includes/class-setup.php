@@ -19,15 +19,10 @@ class OSLinkedServicesSetup
     public function hooks()
     {
         add_action('wp_enqueue_scripts', array($this, 'scripts'));
-        add_action('latepoint_order_created', array($this, 'my_custom_order_handler'), 10, 1);
 //        add_action('admin_enqueue_scripts', array($this, 'admin_scripts'));
     }
 
 
-    function my_custom_order_handler($order) {
-       error_log("ok this is working");
-       error_log(print_r($order));
-    }
     public function admin_scripts()
     {
         wp_enqueue_style('latepoint-linked-services-admin-style', LATEPOINT_LINKED_SERVICES_URL . 'assets/style/admin.css');
