@@ -48,9 +48,9 @@ $end_date = $end_date->format('Y-m-d');
     echo OsFormHelper::hidden_field('timezone_name', $timezone_name, [ 'class' => 'latepoint_timezone_name', 'skip_id' => true]);
 
     //todo: add values here
-    echo OsFormHelper::hidden_field('booking[linked_service_start_date]', '', [ 'class' => 'latepoint_linked_service_start_date', 'skip_id' => true]);
+    echo OsFormHelper::hidden_field('linked_service[start_date]', '', [ 'class' => 'latepoint_linked_service_start_date', 'skip_id' => true]);
     //todo: add values here
-    echo OsFormHelper::hidden_field('booking[linked_service_start_time]', '', [ 'class' => 'latepoint_linked_service_start_time', 'skip_id' => true]);
-    echo OsFormHelper::hidden_field('booking[linked_service_id]', $linked_services_booking->service_id, ['class' => 'latepoint_service_id', 'skip_id' => true]);
+    echo OsFormHelper::hidden_field('linked_service[start_time]', '', [ 'class' => 'latepoint_linked_service_start_time', 'skip_id' => true]);
+    echo OsFormHelper::hidden_field('linked_service[id]', $linked_services_booking->service_id, ['class' => 'latepoint_service_id', 'skip_id' => true]);
     ?>
 </div>

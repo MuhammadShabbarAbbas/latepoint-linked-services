@@ -36,25 +36,35 @@ class OSLinkedServicesSteps
 
         add_filter('latepoint_model_set_data', [$this, 'add_linked_service_data_to_booking'], 10, 2);
 
+//        add_action('latepoint_booking_created', [$this, 'add_linked_services_to_order_booking']);
+//        add_action('latepoint_order_created', [$this, 'add_linked_services_to_order']);
     }
 
-    public function add_linked_service_data_to_booking($booking_object, $data)
+    public function add_linked_services_to_order_booking($order_booking)
     {
-        //todo: look into this return further, as currently this is being called for settings model as well. 
-        if(!is_array($data)) return $booking_object;
-        if (isset($data['linked_service_start_date'])) {
-            $booking_object->linked_service_start_date = $data['linked_service_start_date'];
-        }
-        if (isset($data['linked_service_start_time'])) {
-            $booking_object->linked_service_start_time = $data['linked_service_start_time'];
+        $a = $order_booking;
+    }
+
+    public function add_linked_services_to_order($order)
+    {
+        $a = $order;
+    }
+
+    public function add_linked_service_data_to_booking($model, $data)
+    {
+        //todo: look into this return further, as currently this is being called for settings model as well.
+        if ($model instanceof OsBookingModel) {
+            if ( $data && isset( $data['linked_service'] ) ) {
+
+                $linked_service = $data['linked_service'];
+                $service = new OsServiceModel($linked_service['id']);
+                $linked_service->end_date = $this->calculate_end_date($service, $model);
+                $linked_service->end_time = $this->calculate_end_time($service, $model);
+                $model->linked_service = $linked_service;
+            }
         }
 
-        if (isset($data['linked_service_start_date']) && isset($data['linked_service_start_time']) && isset($data['linked_service_id'])) {
-            $service = new OsServiceModel($booking_object->linked_service_id);
-            $booking_object->linked_service_end_date = $this->calculate_end_date($service, $booking_object);
-            $booking_object->linked_service_end_time = $this->calculate_end_time($service, $booking_object);
-        }
-        return $booking_object;
+        return $model;
     }
 
     public function calculate_end_date($service, $booking_object)
