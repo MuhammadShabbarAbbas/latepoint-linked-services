@@ -34,95 +34,210 @@ class OSLinkedServicesSteps
         add_filter('latepoint_booking_summary_formatted_booking_start_datetime', [$this, 'add_linked_service_datetime_to_active_cart_item'], 10, 2);
 
 
-        add_filter('latepoint_model_set_data', [$this, 'add_linked_service_data_to_booking'], 10, 2);
+        add_action('latepoint_model_set_data', [$this, 'set_linked_service_data'], 10, 2);
+
+        add_filter( 'latepoint_generated_params_for_booking_form', [$this, 'add_linked_service_to_booking_form_params'], 10, 2 );
+
+//        add_filter( 'latepoint_cart_data_for_order_intent', [$this, 'process_custom_fields_in_booking_data_for_order_intent'] );
+
+//        add_filter( 'latepoint_get_results_as_models', [$this, 'load_custom_fields_for_model'] );
+//        add_filter( 'latepoint_model_loaded_by_id', [$this, 'load_custom_fields_for_model'] );
+
+        add_action('latepoint_booking_created', [$this, 'book_linked_service']);
+        //todo: need to look at it.
+        add_action('latepoint_booking_updated', [$this, 'book_linked_service']);
+
+//        add_action('latepoint_order_created', [$this, 'add_linked_services_to_order']);
+//
+
+//        add_filter( 'latepoint_model_view_as_data', 'OsFeatureCustomFieldsHelper::add_booking_custom_fields_data_vars_to_booking', 10, 2 );
+
+//
+//        add_action( 'latepoint_available_vars_after', 'OsFeatureCustomFieldsHelper::output_custom_fields_vars' );
+
+
+//        add_filter( 'latepoint_cart_data_for_order_intent', [$this, 'process_linked_service_in_booking_data_for_order_intent'] );
+
+
+
+        //add_action( 'latepoint_model_save', [$this, 'save_custom_fields'] ); //we don't need this one as we're using booking_created instead
+
+
+        //todo must have following after completion of functionality
+//        add_filter( 'latepoint_booking_summary_service_attributes', 'OsFeatureCustomFieldsHelper::add_booking_custom_fields_to_service_attributes', 10, 2 );
+//        add_filter( 'latepoint_svg_for_step_code', 'OsFeatureCustomFieldsHelper::add_svg_for_step', 10, 2 );
+
+
+
 
     }
 
-    public function add_linked_service_data_to_booking($booking_object, $data)
+
+
+    public static function add_linked_service_to_booking_form_params(array $params, OsBookingModel $booking ) {
+        if ( ! empty( $booking->linked_service ) ) {
+            $params['linked_service'] = $booking->linked_service;
+        }
+
+        return $params;
+    }
+
+    public static function process_linked_service_in_booking_data_for_order_intent(array $booking_data ): array {
+
+
+        // get files from $_FILES object
+        $files = OsParamsHelper::get_file( 'booking' );
+
+        $custom_fields_structure = OsCustomFieldsHelper::get_custom_fields_arr( 'booking', 'agent' );
+        if ( ! isset( $booking_data['custom_fields'] ) ) {
+            $booking_data['custom_fields'] = [];
+        }
+        if ( $custom_fields_structure ) {
+            foreach ( $custom_fields_structure as $custom_field ) {
+                switch ( $custom_field['type'] ) {
+                    case 'file_upload':
+                        if ( ! empty( $files['name']['custom_fields'][ $custom_field['id'] ] ) ) {
+                            if ( ! function_exists( 'wp_handle_upload' ) ) {
+                                require_once( ABSPATH . 'wp-admin/includes/file.php' );
+                            }
+                            for ( $i = 0; $i < count( $files['name']['custom_fields'][ $custom_field['id'] ] ); $i ++ ) {
+                                $file   = [
+                                    'name'     => $files['name']['custom_fields'][ $custom_field['id'] ][ $i ],
+                                    'type'     => $files['type']['custom_fields'][ $custom_field['id'] ][ $i ],
+                                    'tmp_name' => $files['tmp_name']['custom_fields'][ $custom_field['id'] ][ $i ],
+                                    'error'    => $files['error']['custom_fields'][ $custom_field['id'] ][ $i ],
+                                    'size'     => $files['size']['custom_fields'][ $custom_field['id'] ][ $i ]
+                                ];
+                                $result = wp_handle_upload( $file, [ 'test_form' => false ] );
+                                if ( ! isset( $result['error'] ) && ! empty( $result['url'] ) ) {
+                                    $booking_data['custom_fields'][ $custom_field['id'] ] = $result['url'];
+                                }
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        return $booking_data;
+    }
+
+    public static function save_custom_fields( $model ) {
+        if ( $model->is_new_record() ) {
+            return;
+        }
+        if ( $model instanceof OsBookingModel ) {
+            $model->save_meta_by_key( 'linked_service', $model->linked_service );
+        }
+    }
+
+    public function book_linked_service($order_booking)
+    {
+        $linked_booking = new OsBookingModel();
+
+        $linked_booking->start_date = $order_booking->linked_service->start_date;
+        $linked_booking->location_id = $order_booking->location_id;
+        $linked_booking->start_time = $order_booking->linked_service->start_time;
+        $linked_booking->total_attendees = $order_booking->total_attendees;
+        $linked_booking->service_id = $order_booking->linked_service->id;
+        $linked_booking->end_time      = $order_booking->linked_service->calculate_end_time();
+        $linked_booking->end_date      = $order_booking->linked_service->calculate_end_date();
+        $linked_booking->agent_id = $order_booking->agent_id;
+        $linked_booking->order_item_id = $order_booking->order_item_id;
+        $linked_booking->customer_id = $order_booking->customer_id;
+        if($order_booking->custom_fields){
+            $linked_booking->custom_fields = $order_booking->custom_fields;
+        }
+        $linked_booking->set_utc_datetimes();
+        $service                         = new OsServiceModel( $linked_booking->service_id );
+        $linked_booking->buffer_before    = $service->buffer_before;
+        $linked_booking->buffer_after     = $service->buffer_after;
+        $linked_booking->customer_comment = $order_booking->customer_comment;
+        $result = $linked_booking->save();
+
+//        $booking                = OsOrdersHelper::create_booking_object_from_booking_data_form( $booking_params );
+//        $booking->customer_id   = $order->customer_id;
+//        $booking->order_item_id = $order_item_model->id;
+//        $booking->form_id       = $booking_id;
+
+//        $a = $order_booking;
+    }
+
+    public static function load_custom_fields_for_model( $model ) {
+        if (  $model instanceof OsBookingModel ) {
+            $model->linked_service_test1 = 1;
+        }
+
+        return $model;
+    }
+    public function add_linked_services_to_order($order)
+    {
+        $a = $order;
+    }
+
+
+    public function process_custom_fields_in_booking_data_for_order_intent(array $booking_data)
+    {
+        $booking_data->linked_service_test = 1;
+        return $booking_data;
+    }
+
+
+    public static function set_custom_fields_data( $model, $data = [] ) {
+        if ( ( $model instanceof OsBookingModel ) || ( $model instanceof OsCustomerModel ) ) {
+            if ( $data && isset( $data['custom_fields'] ) ) {
+                $fields_for              = ( $model instanceof OsBookingModel ) ? 'booking' : 'customer';
+                $custom_fields_structure = OsCustomFieldsHelper::get_custom_fields_arr( $fields_for, 'agent' );
+                if ( ! isset( $model->custom_fields ) ) {
+                    $model->custom_fields = [];
+                }
+                foreach ( $data['custom_fields'] as $key => $custom_field ) {
+                    // check if data is allowed
+                    if ( isset( $custom_fields_structure[ $key ] ) ) {
+                        $model->custom_fields[ $key ] = $custom_field;
+                    }
+                }
+            }
+        }
+    }
+
+    public function set_linked_service_data($model, $data)
     {
         //todo: look into this return further, as currently this is being called for settings model as well. 
-        if(!is_array($data)) return $booking_object;
-        if (isset($data['linked_service_start_date'])) {
-            $booking_object->linked_service_start_date = $data['linked_service_start_date'];
-        }
-        if (isset($data['linked_service_start_time'])) {
-            $booking_object->linked_service_start_time = $data['linked_service_start_time'];
-        }
+        if( $model instanceof OsBookingModel ){
+            $linked_service = new OsLinkedService();
+            if (isset($data['linked_service']['start_date'])) {
+                $linked_service->start_date = $data['linked_service']['start_date'];
+                $model->linked_service = $linked_service;
+            }
 
-        if (isset($data['linked_service_start_date']) && isset($data['linked_service_start_time']) && isset($data['linked_service_id'])) {
-            $service = new OsServiceModel($booking_object->linked_service_id);
-            $booking_object->linked_service_end_date = $this->calculate_end_date($service, $booking_object);
-            $booking_object->linked_service_end_time = $this->calculate_end_time($service, $booking_object);
+            if (isset($data['linked_service']['start_time'])) {
+                $linked_service->start_time = $data['linked_service']['start_time'];
+                $model->linked_service = $linked_service;
+            }
+
+            if (isset($data['linked_service']['id']))
+            {
+                $linked_service->id = $data['linked_service']['id'];
+                $model->linked_service = $linked_service;
+            }
         }
-        return $booking_object;
-    }
-
-    public function calculate_end_date($service, $booking_object)
-    {
-
-        if (((int)$booking_object->linked_service_start_time + (int)$service->duration) >= (24 * 60)) {
-            $date_obj = new OsWpDateTime($booking_object->linked_service_start_date);
-            $end_date = $date_obj->modify('+1 day')->format('Y-m-d');
-        } else {
-            $end_date = $booking_object->linked_service_start_date;
-        }
-
-        return $end_date;
     }
 
 
-    public function calculate_end_time($service, $booking_object)
-    {
-        $end_time = (int)$booking_object->start_time + (int)$service->duration;
-        // continues to next day?
-        if ($end_time > (24 * 60)) {
-            $end_time = $end_time - (24 * 60);
-        }
-        return $end_time;
-    }
 
 
     public function add_linked_service_datetime_to_active_cart_item($booking_start_datetime, $booking)
     {
-        if (isset($booking->linked_service_start_date)) {
-            $booking_start_datetime .= ',<br/>' . $this->get_nice_start_datetime($booking);
+        if ($booking->linked_service instanceof OsLinkedService && $booking->linked_service->start_date ) {
+            $booking_start_datetime .= ',<br/>' . $booking->linked_service->get_nice_start_datetime();
         }
-
-//        return json_encode($booking);
         return $booking_start_datetime;
     }
 
 
-    public function get_nice_start_datetime($booking, bool $hide_if_today = true, bool $hide_year_if_current = true): string
-    {
-        if ($hide_if_today && $booking->linked_service_start_date == OsTimeHelper::today_date('Y-m-d')) {
-            $date = __('Today', 'latepoint');
-        } else {
-            $date = $this->get_nice_start_date($booking, $hide_year_if_current);
-        }
-
-        return implode(', ', array_filter([$date, $this->get_nice_start_time($booking)]));
-    }
-
-    public function get_nice_start_date($booking, $hide_year_if_current = false)
-    {
-        $d = OsWpDateTime::os_createFromFormat("Y-m-d", $booking->linked_service_start_date);
-        if (!$d) {
-            return 'n/a';
-        }
-        if ($hide_year_if_current && ($d->format('Y') == OsTimeHelper::today_date('Y'))) {
-            $format = OsSettingsHelper::get_readable_date_format(true);
-        } else {
-            $format = OsSettingsHelper::get_readable_date_format();
-        }
-
-        return OsUtilHelper::translate_months($d->format($format));
-    }
-
-    public function get_nice_start_time($booking)
-    {
-        return OsTimeHelper::minutes_to_hours_and_minutes($booking->linked_service_start_time);
-    }
 
     public function should_step_be_skipped(bool $skip, string $step_code, OsCartModel $cart, OsCartItemModel $cart_item, OsBookingModel $booking): bool
     {
@@ -164,11 +279,11 @@ class OSLinkedServicesSteps
 
             $linked_service_datepicker = new OsLinkedServicesDatePickerController();
 
-            $booking = new OsBookingModel(); //OsStepsHelper::$booking_object;
-            $booking->service_id = $linked_services__ids[0];
-            $booking->agent_id = OsStepsHelper::$booking_object->agent_id;
-            $booking->location_id = OsStepsHelper::$booking_object->location_id;
-            $linked_service_datepicker->vars['linked_services_booking'] = $booking;
+            $linked_service_booking = new OsBookingModel(); //OsStepsHelper::$booking_object;
+            $linked_service_booking->service_id = $linked_services__ids[0];
+            $linked_service_booking->agent_id = OsStepsHelper::$booking_object->agent_id;
+            $linked_service_booking->location_id = OsStepsHelper::$booking_object->location_id;
+            $linked_service_datepicker->vars['linked_services_booking'] = $linked_service_booking;
 //            $linked_service_datepicker->vars['linked_services'] = $linked_services;
 
             $linked_service_datepicker->vars['booking'] = OsStepsHelper::$booking_object;
