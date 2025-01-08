@@ -44,6 +44,7 @@ class OSLinkedServicesSteps
 //        add_filter( 'latepoint_model_loaded_by_id', [$this, 'load_custom_fields_for_model'] );
 
         add_action('latepoint_booking_created', [$this, 'book_linked_service']);
+        //from wp-content/plugins/latepoint/lib/models/order_intent_model.php:256
         //todo: need to look at it.
         add_action('latepoint_booking_updated', [$this, 'book_linked_service']);
 
@@ -205,7 +206,6 @@ class OSLinkedServicesSteps
 
     public function set_linked_service_data($model, $data)
     {
-        //todo: look into this return further, as currently this is being called for settings model as well. 
         if( $model instanceof OsBookingModel ){
             $linked_service = new OsLinkedService();
             if (isset($data['linked_service']['start_date'])) {
