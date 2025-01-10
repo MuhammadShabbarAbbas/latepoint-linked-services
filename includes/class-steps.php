@@ -43,12 +43,12 @@ class OSLinkedServicesSteps
 //        add_filter( 'latepoint_get_results_as_models', [$this, 'load_custom_fields_for_model'] );
 //        add_filter( 'latepoint_model_loaded_by_id', [$this, 'load_custom_fields_for_model'] );
 
-        add_action('latepoint_booking_created', [$this, 'book_linked_service']);
+//        add_action('latepoint_booking_created', [$this, 'book_linked_service']);
         //from wp-content/plugins/latepoint/lib/models/order_intent_model.php:256
         //todo: need to look at it.
-        add_action('latepoint_booking_updated', [$this, 'book_linked_service']);
+//        add_action('latepoint_booking_updated', [$this, 'book_linked_service']);
 
-//        add_action('latepoint_order_created', [$this, 'add_linked_services_to_order']);
+        add_action('latepoint_order_created', [$this, 'add_linked_services_to_order']);
 //
 
 //        add_filter( 'latepoint_model_view_as_data', 'OsFeatureCustomFieldsHelper::add_booking_custom_fields_data_vars_to_booking', 10, 2 );
@@ -175,7 +175,75 @@ class OSLinkedServicesSteps
     }
     public function add_linked_services_to_order($order)
     {
-        $a = $order;
+        $order_items = new OsOrderItemModel();
+        $order_items = $order_items->where(['order_id' => $order->id])->get_results_as_models();
+        if (empty($order_items)) return;
+        foreach ($order_items as $order_item){
+
+            if($order_item->variant !== LATEPOINT_ITEM_VARIANT_BOOKING) continue;
+            if(empty($order_item->item_data)) continue;
+
+            $item_data = json_decode($order_item->item_data);
+
+
+            /***************save booking**************/
+            $linked_service = new OsLinkedService();
+            $linked_service->start_date = $item_data->linked_service->start_date;
+            $linked_service->start_date = $item_data->linked_service->start_date;
+            $linked_service->id = $item_data->linked_service->id;
+
+            $linked_booking = new OsBookingModel();
+            $linked_booking->start_date = $linked_service->start_date;
+            $linked_booking->location_id = $item_data->location_id;
+            $linked_booking->start_time = $linked_service->start_date;
+            $linked_booking->total_attendees = $item_data->total_attendees;
+            $linked_booking->service_id = $linked_service->id;
+            $linked_booking->end_time      = $linked_service->calculate_end_time();
+            $linked_booking->end_date      = $linked_service->calculate_end_date();
+            $linked_booking->agent_id = $item_data->agent_id;
+            $linked_booking->order_item_id = $item_data->order_item_id;
+            $linked_booking->customer_id = $item_data->customer_id;
+            if( !empty($item_data->custom_fields)){
+                $linked_booking->custom_fields = $item_data->custom_fields;
+            }
+            $linked_booking->set_utc_datetimes();
+            $service                         = new OsServiceModel( $linked_booking->service_id );
+            $linked_booking->buffer_before    = $service->buffer_before;
+            $linked_booking->buffer_after     = $service->buffer_after;
+            $linked_booking->customer_comment = $order_item->customer_comment;
+
+
+            /***************cart item**************/
+            $cart_item = new OsCartItemModel();
+            $cart = new OsCartModel();
+            $cart = $cart->where(['order_id' => $order->id])->get_results_as_models();
+            if(empty($cart)) {
+                $order->add_error( 'order_error', sprintf(__('Error: %s', 'latepoint'), "No cart found with order it" ));
+                return;
+            }
+            $cart_item->item_data = json_encode($linked_booking);
+            $cart_item->cart_id = $cart[0]->id;
+            if (!$cart_item->save()) {
+                $order->add_error( 'order_error', sprintf(__('Error: %s', 'latepoint'), "Error saving cart" ));
+                return;
+            }
+
+
+            if (!$linked_booking->save()) {
+                $order->add_error( 'order_error', sprintf(__('Error: %s', 'latepoint'), "Error creating registration" ));
+                return;
+            }
+
+            /***************order item**************/
+            $new_order_item = new OsOrderItemModel();
+            $new_order_item->variant = LATEPOINT_ITEM_VARIANT_BOOKING;
+            $new_order_item->item_data = json_encode($linked_booking);
+            if (!$new_order_item->save()) {
+                $order->add_error( 'order_error', sprintf(__('Error: %s', 'latepoint'), "Error saving order item" ));
+                return;
+            }
+
+        }
     }
 
 
