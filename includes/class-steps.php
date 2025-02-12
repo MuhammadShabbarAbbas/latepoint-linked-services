@@ -70,7 +70,7 @@ class OSLinkedServicesSteps
 
 
 
-
+        //TODO: FOR THE REQGISTRATION OF LINKED SERVICE, ORDER ITEMS ARE NOT POPULATE
     }
 
 
@@ -183,12 +183,10 @@ class OSLinkedServicesSteps
             if($order_item->variant !== LATEPOINT_ITEM_VARIANT_BOOKING) continue;
             if(empty($order_item->item_data)) continue;
 
-            $item_data = json_decode($order_item->item_data);
-
+            $item_data = apply_filters('latepoint_linked_services_linked_service_item_data', json_decode($order_item->item_data)) ;
 
             /***************save booking**************/
             $linked_service = new OsLinkedService();
-            $linked_service->start_date = $item_data->linked_service->start_date;
             $linked_service->start_date = $item_data->linked_service->start_date;
             $linked_service->id = $item_data->linked_service->id;
 
@@ -201,16 +199,16 @@ class OSLinkedServicesSteps
             $linked_booking->end_time      = $linked_service->calculate_end_time();
             $linked_booking->end_date      = $linked_service->calculate_end_date();
             $linked_booking->agent_id = $item_data->agent_id;
-            $linked_booking->order_item_id = $item_data->order_item_id;
             $linked_booking->customer_id = $item_data->customer_id;
             if( !empty($item_data->custom_fields)){
-                $linked_booking->custom_fields = $item_data->custom_fields;
+                $linked_booking->custom_fields = get_object_vars($item_data->custom_fields);
             }
             $linked_booking->set_utc_datetimes();
             $service                         = new OsServiceModel( $linked_booking->service_id );
             $linked_booking->buffer_before    = $service->buffer_before;
             $linked_booking->buffer_after     = $service->buffer_after;
             $linked_booking->customer_comment = $order_item->customer_comment;
+
 
 
             /***************cart item**************/
@@ -221,28 +219,36 @@ class OSLinkedServicesSteps
                 $order->add_error( 'order_error', sprintf(__('Error: %s', 'latepoint'), "No cart found with order it" ));
                 return;
             }
-            $cart_item->item_data = json_encode($linked_booking);
+//            OsBookingHelper::build_booking_model_from_item_data();
+//            OsOrdersHelper::create_order_item_from_cart_item();
+//            OsCartsHelper::create_cart_item_from_item_data();
+//            OsCartsHelper::add_booking_to_cart()
+            $cart_item->item_data = $linked_booking->generate_params_for_booking_form();
             $cart_item->cart_id = $cart[0]->id;
             if (!$cart_item->save()) {
                 $order->add_error( 'order_error', sprintf(__('Error: %s', 'latepoint'), "Error saving cart" ));
                 return;
             }
+            $linked_booking->cart_item_id = $cart_item->id;
+
+            /***************order item**************/
+            $new_order_item = new OsOrderItemModel();
+            $new_order_item->order_id = $order_item->order_id;
+            $new_order_item->variant = LATEPOINT_ITEM_VARIANT_BOOKING;
+            $new_order_item->item_data = json_encode($linked_booking->generate_params_for_booking_form());
+            if (!$new_order_item->save()) {
+                $order->add_error( 'order_error', sprintf(__('Error: %s', 'latepoint'), "Error saving order item" ));
+                return;
+            }
+
+
+            $linked_booking->order_item_id = $new_order_item->id;
 
 
             if (!$linked_booking->save()) {
                 $order->add_error( 'order_error', sprintf(__('Error: %s', 'latepoint'), "Error creating registration" ));
                 return;
             }
-
-            /***************order item**************/
-            $new_order_item = new OsOrderItemModel();
-            $new_order_item->variant = LATEPOINT_ITEM_VARIANT_BOOKING;
-            $new_order_item->item_data = json_encode($linked_booking);
-            if (!$new_order_item->save()) {
-                $order->add_error( 'order_error', sprintf(__('Error: %s', 'latepoint'), "Error saving order item" ));
-                return;
-            }
-
         }
     }
 
