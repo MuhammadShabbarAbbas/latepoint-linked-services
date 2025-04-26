@@ -3,9 +3,13 @@
 ?>
 <style>
 
+    .latepoint-link-service-date-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Two columns */
+        gap: 15px; /* Space between boxes */
+    }
+
     .latepoint-link-service-date-box {
-        margin-bottom: 10px;
-        width: 100%;
         background-color: white;
         border: 1px solid #ccc;
         border-radius: 8px;
@@ -31,6 +35,7 @@
         font-size: 14px;
         color: #666;
     }
+
 </style>
 <div class="step-datepicker-w latepoint-step-content" data-step-code="<?php echo $current_step_code; ?>"  data-clear-action="clear_step_datepicker">
     <?php
@@ -45,12 +50,15 @@
     ];
     ?>
 
-    <?php foreach ($dates as $item): ?>
-        <div class="latepoint-link-service-date-box">
-            <p><?php echo htmlspecialchars($item['day']); ?></p>
-            <small><?php echo htmlspecialchars($item['date']); ?> - <?php echo htmlspecialchars($item['time']); ?> </small>
-        </div>
-    <?php endforeach; ?>
+    <div class="latepoint-link-service-date-container">
+        <?php foreach ($dates as $item): ?>
+            <div class="latepoint-link-service-date-box">
+                <p><?php echo htmlspecialchars($item['day']); ?></p>
+                <small><?php echo htmlspecialchars($item['date']); ?> - <?php echo htmlspecialchars($item['time']); ?></small>
+            </div>
+        <?php endforeach; ?>
+    </div>
+
 
 
     <?php
