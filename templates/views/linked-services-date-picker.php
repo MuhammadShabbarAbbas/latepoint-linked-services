@@ -1,56 +1,84 @@
 <?php
-/**
- * @var $current_step_code string
- * @var $cart OsCartModel
- * @var $booking OsBookingModel
- * @var $restrictions array
- * @var $presets array
- * @var $calendar_start_date string
- * @var $linked_services_booking OsBookingModel
- */
-$end_date = new DateTime($booking->start_date);
-// Add one week
-$end_date->modify('+1 week');
-// Display the updated date and time
-$end_date = $end_date->format('Y-m-d');
-?>
 
+?>
+<style>
+
+    .latepoint-link-service-date-box {
+        margin-bottom: 10px;
+        width: 100%;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        user-select: none;
+    }
+
+    .latepoint-link-service-date-box.selected {
+        border-color: #28c76f;
+        background-color: #e6f9ee;
+    }
+
+    .latepoint-link-service-date-box p {
+        margin: 0;
+        font-weight: 600;
+        font-size: 18px;
+    }
+
+    .latepoint-link-service-date-box small {
+        font-size: 14px;
+        color: #666;
+    }
+</style>
 <div class="step-datepicker-w latepoint-step-content" data-step-code="<?php echo $current_step_code; ?>"  data-clear-action="clear_step_datepicker">
     <?php
-    do_action('latepoint_before_step_content', $current_step_code);
-    echo OsStepsHelper::get_formatted_extra_step_content($current_step_code, 'before');
+    $dates = [
+        ['day' => 'Friday and Saturday', 'date' => '19 and 20 April, 2025', 'time' => '8 Am'],
+        ['day' => 'Friday and Saturday', 'date' => '20 and 21 April, 2025', 'time' => '8 Am'],
+        ['day' => 'Friday and Saturday', 'date' => '21 and 22 April, 2025', 'time' => '8 Am'],
+        ['day' => 'Friday and Saturday', 'date' => '22 and 23 April, 2025', 'time' => '8 Am'],
+        ['day' => 'Friday and Saturday', 'date' => '23 and 24 April, 2025', 'time' => '8 Am'],
+        ['day' => 'Friday and Saturday', 'date' => '24 and 25 April, 2025', 'time' => '8 Am'],
+        ['day' => 'Friday and Saturday', 'date' => '25 and 26 April, 2025', 'time' => '8 Am'],
+    ];
     ?>
-    <div class="os-dates-w">
-        <?php OsLinkedServicesCalendarHelper::generate_calendar_for_datepicker_step(\LatePoint\Misc\BookingRequest::create_from_booking_model($linked_services_booking), new OsWpDateTime($booking->start_date), ['timezone_name' => OsTimeHelper::get_timezone_name_from_session(), 'consider_cart_items' => true, 'earliest_possible_booking'=> $booking->start_date, 'latest_possible_booking' => $end_date]); ?>
-    </div>
-    <div class="linked-service-time-selector-w <?php echo OsStepsHelper::hide_unavailable_slots() ? 'hide-not-available-slots' : ''; ?> <?php echo 'time-system-'.OsTimeHelper::get_time_system(); ?> <?php echo (OsSettingsHelper::is_on('show_booking_end_time')) ? 'with-end-time' : 'without-end-time'; ?> style-<?php echo OsStepsHelper::get_time_pick_style(); ?>">
-        <div class="times-header">
-            <div class="th-line"></div>
-            <div class="linked-service-times-header-label">
-                <?php _e('Pick a slot for', 'latepoint'); ?> <span></span>
-                <?php do_action('latepoint_step_datepicker_linked_services_appointment_time_header_label', $linked_services_booking); ?>
-            </div>
-            <div class="th-line"></div>
+
+    <?php foreach ($dates as $item): ?>
+        <div class="latepoint-link-service-date-box">
+            <p><?php echo htmlspecialchars($item['day']); ?></p>
+            <small><?php echo htmlspecialchars($item['date']); ?> - <?php echo htmlspecialchars($item['time']); ?> </small>
         </div>
-        <div class="os-times-w">
-            <div class="linked-service-timeslots"></div>
-        </div>
-    </div>
+    <?php endforeach; ?>
+
 
     <?php
 
     echo OsStepsHelper::get_formatted_extra_step_content($current_step_code, 'after');
     do_action('latepoint_after_step_content', $current_step_code);
 
-    echo OsFormHelper::hidden_field('booking[start_date]', $booking->start_date, [ 'class' => 'latepoint_start_date', 'skip_id' => true]);
-    echo OsFormHelper::hidden_field('booking[start_time]', $booking->start_time, [ 'class' => 'latepoint_start_time', 'skip_id' => true]);
-    echo OsFormHelper::hidden_field('timeshift_minutes', $timeshift_minutes, [ 'class' => 'latepoint_timeshift_minutes', 'skip_id' => true]);
-    echo OsFormHelper::hidden_field('timezone_name', $timezone_name, [ 'class' => 'latepoint_timezone_name', 'skip_id' => true]);
-
-    //todo: add values here
-    echo OsFormHelper::hidden_field('booking[linked_service][start_date]', '', [ 'class' => 'latepoint_linked_service_start_date', 'skip_id' => true]);
-    //todo: add values here
-    echo OsFormHelper::hidden_field('booking[linked_service][start_time]', '', [ 'class' => 'latepoint_linked_service_start_time', 'skip_id' => true]);
-    echo OsFormHelper::hidden_field('booking[linked_service][id]', $linked_services_booking->service_id, ['class' => 'latepoint_linked_service_id', 'skip_id' => true]);
+//    echo OsFormHelper::hidden_field('booking[start_date]', $booking->start_date, [ 'class' => 'latepoint_start_date', 'skip_id' => true]);
+//    echo OsFormHelper::hidden_field('booking[start_time]', $booking->start_time, [ 'class' => 'latepoint_start_time', 'skip_id' => true]);
+//    echo OsFormHelper::hidden_field('timeshift_minutes', $timeshift_minutes, [ 'class' => 'latepoint_timeshift_minutes', 'skip_id' => true]);
+//    echo OsFormHelper::hidden_field('timezone_name', $timezone_name, [ 'class' => 'latepoint_timezone_name', 'skip_id' => true]);
+//
+//    //todo: add values here
+//    echo OsFormHelper::hidden_field('booking[linked_service][start_date]', '', [ 'class' => 'latepoint_linked_service_start_date', 'skip_id' => true]);
+//    //todo: add values here
+//    echo OsFormHelper::hidden_field('booking[linked_service][start_time]', '', [ 'class' => 'latepoint_linked_service_start_time', 'skip_id' => true]);
+//    echo OsFormHelper::hidden_field('booking[linked_service][id]', $linked_services_booking->service_id, ['class' => 'latepoint_linked_service_id', 'skip_id' => true]);
     ?>
+
+    <script>
+        // JS to handle box selection
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.latepoint-link-service-date-box')) {
+                const boxes = document.querySelectorAll('.latepoint-link-service-date-box');
+                boxes.forEach(box => box.classList.remove('selected'));
+                e.target.closest('.latepoint-link-service-date-box').classList.add('selected');
+            }
+        });
+    </script>
+
 </div>

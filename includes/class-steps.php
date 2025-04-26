@@ -315,6 +315,14 @@ class OSLinkedServicesSteps
 
     public function should_step_be_skipped(bool $skip, string $step_code, OsCartModel $cart, OsCartItemModel $cart_item, OsBookingModel $booking): bool
     {
+        if($step_code === "booking__datepicker"){
+            $service = new OsServiceModel($booking->service_id);
+            $linked_services = $service->get_meta_by_key('linked_services');
+            $linked_services = $linked_services ? json_decode($linked_services) : [];
+            if (!empty($linked_services)) {
+                $skip = true;
+            }
+        }
         if ($step_code == $this->step_code) {
             if ($booking->is_part_of_bundle()) {
                 // bundle bookings have preset duration, no need to ask customer for it
