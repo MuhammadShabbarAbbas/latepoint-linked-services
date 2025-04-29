@@ -38,19 +38,9 @@
 
 </style>
 <div class="step-datepicker-w latepoint-step-content" data-step-code="<?php echo $current_step_code; ?>"  data-clear-action="clear_step_datepicker">
-    <?php
-    $dates = [
-        ['day' => 'Friday and Saturday', 'date' => '19 and 20 April, 2025', 'time' => '8 Am'],
-        ['day' => 'Friday and Saturday', 'date' => '20 and 21 April, 2025', 'time' => '8 Am'],
-        ['day' => 'Friday and Saturday', 'date' => '21 and 22 April, 2025', 'time' => '8 Am'],
-        ['day' => 'Friday and Saturday', 'date' => '22 and 23 April, 2025', 'time' => '8 Am'],
-        ['day' => 'Friday and Saturday', 'date' => '23 and 24 April, 2025', 'time' => '8 Am'],
-        ['day' => 'Friday and Saturday', 'date' => '24 and 25 April, 2025', 'time' => '8 Am'],
-        ['day' => 'Friday and Saturday', 'date' => '25 and 26 April, 2025', 'time' => '8 Am'],
-    ];
-    ?>
 
     <?php
+        $slots = [];
         $target_date = new OsWpDateTime('now');
         $service = OsLinkedServicesCalendarHelper::extract_dates_and_times_data($booking, $target_date, ['timezone_name' => OsTimeHelper::get_timezone_name_from_session(), 'consider_cart_items' => true]);
         foreach ($service['months'] as $month) {
@@ -60,30 +50,34 @@
                     $end_date->modify('+1 week');
                     $end_date = $end_date->format('Y-m-d');
                     $linked_service = OsLinkedServicesCalendarHelper::extract_dates_and_times_data($linked_services_booking, new OsWpDateTime($day['date']),['timezone_name' => OsTimeHelper::get_timezone_name_from_session(), 'consider_cart_items' => true, 'earliest_possible_booking'=> $day['date'], 'latest_possible_booking' => $end_date]);
-                    echo json_encode($linked_service);
-                    break;
+                    foreach ($linked_service['months'] as $linked_month) {
+                        foreach ($linked_month['days'] as $linked_day) {
+                            if(!$linked_day['is_past'] && $linked_day['bookable_slots_count'] > 0){
+
+                                $minutes = $day['work_minutes'][0];
+                                $hours = floor($minutes / 60);
+                                $mins = $minutes % 60;
+                                $time = DateTime::createFromFormat('H:i', sprintf('%02d:%02d', $hours, $mins));
+                                $slots[] = [
+                                        'weekday_name' => $day['weekday_name'] . ' - ' . $linked_day['weekday_name'],
+                                        'date_range' => $day['date'] . ' - ' . $linked_day['date'],
+                                        'start_date'=> $day['date'],
+                                        'time' => $time->format('g:i A'),
+                                        'minutes' => $minutes,
+                                ];
+                            }
+                        }
+                    }
                 }
             }
         }
-
-    //foreach by service
-            // if is not past and bookable slot is 1 or more
-            //  $linkedService = OsLinkedServicesCalendarHelper::extract_dates_and_times_data($linked_services_booking, new OsWpDateTime($booking->start_date), ['timezone_name' => OsTimeHelper::get_timezone_name_from_session(), 'consider_cart_items' => true, 'earliest_possible_booking'=> $booking->start_date, 'latest_possible_booking' => $end_date]);
-                    //new OsWpDateTime($booking->start_date) -> should be form current foreach date
-                    //'latest_possible_booking' => -> should be current foreach date + 7 days
-                    //in result you'll get same json, but the days and month will be only one.
-                    // now create html:
-
-//        $linked_service = OsLinkedServicesCalendarHelper::extract_dates_and_times_data($linked_services_booking, new OsWpDateTime($booking->start_date), ['timezone_name' => OsTimeHelper::get_timezone_name_from_session(), 'consider_cart_items' => true, 'earliest_possible_booking'=> $booking->start_date, 'latest_possible_booking' => $end_date]);
-//        echo json_encode($linked_service);
-
-
     ?>
-    <div class="latepoint-link-service-date-container">
-        <?php foreach ($dates as $item): ?>
-            <div class="latepoint-link-service-date-box">
-                <p><?php echo htmlspecialchars($item['day']); ?></p>
-                <small><?php echo htmlspecialchars($item['date']); ?> - <?php echo htmlspecialchars($item['time']); ?></small>
+
+    <div class="latepoint-link-service-date-container os-animated-parent os-items os-selectable-items">
+        <?php foreach ($slots as $slot): ?>
+            <div class="latepoint-link-service-date-box os-animated-child os-item os-selectable-item" data-minutes="<?php echo $slot['minutes']?>"  data-id-holder=".latepoint_start_date" data-item-id="<?php echo $slot['start_date']?>">
+                <p><?php echo htmlspecialchars($slot['weekday_name']); ?></p>
+                <small><?php echo htmlspecialchars($slot['date_range']); ?> - <?php echo htmlspecialchars($slot['time']); ?></small>
             </div>
         <?php endforeach; ?>
     </div>
@@ -95,8 +89,8 @@
     echo OsStepsHelper::get_formatted_extra_step_content($current_step_code, 'after');
     do_action('latepoint_after_step_content', $current_step_code);
 
-//    echo OsFormHelper::hidden_field('booking[start_date]', $booking->start_date, [ 'class' => 'latepoint_start_date', 'skip_id' => true]);
-//    echo OsFormHelper::hidden_field('booking[start_time]', $booking->start_time, [ 'class' => 'latepoint_start_time', 'skip_id' => true]);
+    echo OsFormHelper::hidden_field('booking[start_date]', $booking->start_date, [ 'class' => 'latepoint_start_date', 'skip_id' => true]);
+    echo OsFormHelper::hidden_field('booking[start_time]', $booking->start_time, [ 'class' => 'latepoint_start_time', 'skip_id' => true]);
 //    echo OsFormHelper::hidden_field('timeshift_minutes', $timeshift_minutes, [ 'class' => 'latepoint_timeshift_minutes', 'skip_id' => true]);
 //    echo OsFormHelper::hidden_field('timezone_name', $timezone_name, [ 'class' => 'latepoint_timezone_name', 'skip_id' => true]);
 //
@@ -109,12 +103,14 @@
 
     <script>
         // JS to handle box selection
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.latepoint-link-service-date-box')) {
-                const boxes = document.querySelectorAll('.latepoint-link-service-date-box');
-                boxes.forEach(box => box.classList.remove('selected'));
-                e.target.closest('.latepoint-link-service-date-box').classList.add('selected');
-            }
+        document.querySelectorAll('.latepoint-link-service-date-box').forEach(box => {
+            box.addEventListener('click', function () {
+                const startDate = this.getAttribute('data-minutes');
+                const input = document.querySelector('.latepoint_start_time');
+                if (input) {
+                    input.value = startDate;
+                }
+            });
         });
     </script>
 
