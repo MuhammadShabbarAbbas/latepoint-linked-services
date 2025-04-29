@@ -18,3 +18,674 @@
     animation: 0.1s ease latepointAvailabilityPopup;
     animation-fill-mode: both;
 }
+
+
+.latepoint-w .latepoint-booking-form-element.latepoint-border-radius-rounded .os-monthly-calendar-days .os-linked-services-day .os-day-box {
+    border-radius: 8px;
+}
+
+.reschedule-calendar-wrapper .os-linked-services-monthly-calendar-days-w.hide-if-single-slot .os-linked-services-day.os-one-slot-only .os-day-status {
+    display: none;
+}
+.reschedule-calendar-wrapper .os-linked-services-monthly-calendar-days-w.hide-if-single-slot .os-linked-services-day.selected:after {
+    font-family: "latepointIcons" !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    content: "\e903";
+    background-color: var(--latepoint-brand-primary);
+    box-shadow: 0px 0px 0px 2px #fff;
+    border-radius: 50%;
+    width: 14px;
+    line-height: 14px;
+    height: 14px;
+    bottom: 50%;
+    left: 50%;
+    font-size: 10px;
+    text-align: center;
+    position: absolute;
+    color: #fff;
+    transform: translate(11px, -10px);
+}
+
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day {
+    text-align: center;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day:focus-visible {
+    outline: 2px solid var(--latepoint-brand-primary);
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.os-day-next-month, .reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.os-day-prev-month {
+    color: #B7BCCB;
+    background-color: #fff;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.os-day-current .os-day-box {
+    background-color: #eefdec;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.os-day-current.os-not-available {
+    cursor: not-allowed;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.os-day-current.os-not-available .os-day-box {
+    background-color: transparent;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.os-day-current.os-not-available .os-day-box .os-day-status {
+    background-color: #f7f7f7;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.os-day-current.os-not-available .os-day-box .os-day-number {
+    color: #adadae;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.os-day-current.os-not-available.selected .os-day-box {
+    background-color: #ec7376;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.os-day-current.os-not-available.selected .os-day-box .os-day-number {
+    color: #fff;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.os-day-passed .os-day-box {
+    background-color: transparent;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.os-day-passed .os-day-box .os-day-number {
+    color: #bdc5da;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.os-not-in-allowed-period .os-day-box {
+    background-color: #f7f8fb;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.os-not-in-allowed-period .os-day-box .os-day-number {
+    color: #bdc5da;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.os-today .os-day-box {
+    background-color: #fff6cb;
+    border-color: #fff6cb;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.os-month-next .os-day-box, .reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.os-month-prev .os-day-box {
+    opacity: 0.6;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.os-month-next .os-day-box:hover, .reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.os-month-prev .os-day-box:hover {
+    opacity: 1;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day .os-day-box {
+    padding: 8px 5px;
+    position: relative;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day .os-available-slots-tooltip {
+    position: absolute;
+    top: 0px;
+    left: 50%;
+    transform: translate3d(-50%, -100%, 0);
+    background-color: #111;
+    padding: 4px 6px;
+    color: #fff;
+    font-weight: 600;
+    display: none;
+    white-space: nowrap;
+    z-index: 9999;
+    font-size: 15px;
+    animation: 0.1s ease latepointAvailabilityPopup;
+    animation-fill-mode: both;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day .os-day-number {
+    color: #14161d;
+    transition: all 0.1s ease;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day .os-day-status {
+    transition: all 0.1s ease;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day:hover .os-day-box .os-day-number {
+    top: 40%;
+    transform: translateY(-2px) scale(1.2);
+    white-space: nowrap;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day:hover .os-day-box:hover .os-available-slots-tooltip {
+    display: block;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day:hover .os-day-status {
+    height: 6px;
+    left: 3px;
+    right: 3px;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.selected .os-day-box {
+    background-color: var(--latepoint-brand-primary);
+    border-color: transparent;
+    color: #fff;
+    opacity: 1;
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.selected .os-day-box .os-day-number {
+    color: #fff;
+    transform: scale(1.2);
+}
+.reschedule-calendar-wrapper .os-monthly-calendar-days .os-linked-services-day.selected .os-day-box .os-day-status {
+    display: none;
+}
+.reschedule-calendar-wrapper .os-day-status {
+    margin: 0px;
+    height: 4px;
+    position: absolute;
+    border-radius: 0px;
+    overflow: hidden;
+    bottom: 3px;
+    left: 8px;
+    right: 8px;
+    background-color: #e6e9ef;
+}
+.reschedule-calendar-wrapper .os-day-status .day-available {
+    background-color: #8fe286;
+    top: 0px;
+    bottom: 0px;
+    position: absolute;
+    z-index: 1;
+    min-width: 3px;
+}
+
+
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day {
+    text-align: center;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day:focus-visible {
+    outline: 2px solid var(--latepoint-brand-primary);
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.os-day-next-month, .latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.os-day-prev-month {
+    color: #B7BCCB;
+    background-color: #fff;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.os-day-current .os-day-box {
+    background-color: #eefdec;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.os-day-current.os-not-available {
+    cursor: not-allowed;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.os-day-current.os-not-available .os-day-box {
+    background-color: transparent;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.os-day-current.os-not-available .os-day-box .os-day-status {
+    background-color: #f7f7f7;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.os-day-current.os-not-available .os-day-box .os-day-number {
+    color: #adadae;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.os-day-current.os-not-available.selected .os-day-box {
+    background-color: #ec7376;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.os-day-current.os-not-available.selected .os-day-box .os-day-number {
+    color: #fff;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.os-day-passed .os-day-box {
+    background-color: transparent;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.os-day-passed .os-day-box .os-day-number {
+    color: #bdc5da;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.os-not-in-allowed-period .os-day-box {
+    background-color: #f7f8fb;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.os-not-in-allowed-period .os-day-box .os-day-number {
+    color: #bdc5da;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.os-today .os-day-box {
+    background-color: #fff6cb;
+    border-color: #fff6cb;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.os-month-next .os-day-box, .latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.os-month-prev .os-day-box {
+    opacity: 0.6;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.os-month-next .os-day-box:hover, .latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.os-month-prev .os-day-box:hover {
+    opacity: 1;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day .os-day-box {
+    padding: 8px 5px;
+    position: relative;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day .os-available-slots-tooltip {
+    position: absolute;
+    top: 0px;
+    left: 50%;
+    transform: translate3d(-50%, -100%, 0);
+    background-color: #111;
+    padding: 4px 6px;
+    color: #fff;
+    font-weight: 600;
+    display: none;
+    white-space: nowrap;
+    z-index: 9999;
+    font-size: 15px;
+    animation: 0.1s ease latepointAvailabilityPopup;
+    animation-fill-mode: both;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day .os-day-number {
+    color: #14161d;
+    transition: all 0.1s ease;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day .os-day-status {
+    transition: all 0.1s ease;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day:hover .os-day-box .os-day-number {
+    top: 40%;
+    transform: translateY(-2px) scale(1.2);
+    white-space: nowrap;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day:hover .os-day-box:hover .os-available-slots-tooltip {
+    display: block;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day:hover .os-day-status {
+    height: 6px;
+    left: 3px;
+    right: 3px;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.selected .os-day-box {
+    background-color: var(--latepoint-brand-primary);
+    border-color: transparent;
+    color: #fff;
+    opacity: 1;
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.selected .os-day-box .os-day-number {
+    color: #fff;
+    transform: scale(1.2);
+}
+.latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.selected .os-day-box .os-day-status {
+    display: none;
+}
+
+@media (max-width: 600px) {
+
+    .latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.week-day-1 .os-available-slots-tooltip,
+    .latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.week-day-7 .os-available-slots-tooltip {
+        transform: none;
+        animation: 0.1s ease latepointAvailabilityPopupY;
+        animation-fill-mode: both;
+    }
+    .latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.week-day-7 .os-available-slots-tooltip {
+        left: auto;
+        right: 0;
+    }
+    .latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day.week-day-1 .os-available-slots-tooltip {
+        left: 0;
+    }
+    .latepoint-w .latepoint-booking-form-element .os-monthly-calendar-days .os-linked-services-day .os-day-number {
+        top: 45%;
+    }
+}
+
+
+.reschedule-calendar-wrapper .step-datepicker-w .linked-service-time-selector-w:not(.style-timeline) .dp-timepicker-trigger:not(.selected):hover .dp-capacity, .reschedule-calendar-wrapper .reschedule-calendar-datepicker .linked-service-time-selector-w:not(.style-timeline) .dp-timepicker-trigger:not(.selected):hover .dp-capacity {
+    display: block;
+}
+.reschedule-calendar-wrapper .linked-service-timeslots {
+    display: flex;
+    justify-content: space-between;
+}
+.reschedule-calendar-wrapper .linked-service-timeslots .not-working-message {
+    flex: 1;
+    padding: 3px 5px;
+    text-align: center;
+    background-color: #f7e8e8;
+    color: #752f2f;
+    font-weight: 600;
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w {
+    display: none;
+    margin-top: 20px;
+    margin-left: -2px;
+    margin-right: -2px;
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w.hide-not-available-slots .dp-timebox.is-off, .reschedule-calendar-wrapper .linked-service-time-selector-w.hide-not-available-slots .dp-timebox.is-booked {
+    display: none;
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w .th-timezone {
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w .th-timezone strong {
+    color: #7c85a3;
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w.style-timebox {
+    margin-top: 20px;
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w.style-timebox .linked-service-timeslots {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w.style-timebox .linked-service-timeslots.slots-not-available {
+    grid-template-columns: repeat(1, 1fr) !important;
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w.style-timebox .linked-service-timeslots .not-working-message {
+    border-radius: 4px;
+    padding: 6px;
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w.style-timebox .linked-service-timeslots .dp-timebox .dp-label-capacity {
+    display: none;
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w.style-timebox .linked-service-timeslots .dp-timebox.is-off {
+    display: none;
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w.style-timebox .times-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-top: 10px;
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w.style-timebox .times-header .linked-service-times-header-label {
+    flex: 1;
+    margin: 0px 15px;
+    white-space: nowrap;
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w.style-timebox .times-header .th-line {
+    height: 1px;
+    flex: 1;
+    background-color: rgba(0, 0, 0, 0.1);
+    content: "";
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w.style-timeline {
+    padding-bottom: 30px;
+    flex-wrap: no-wrap;
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w.with-end-time.time-system-12 .linked-service-timeslots {
+    grid-template-columns: repeat(2, 1fr);
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w.with-end-time.time-system-12 .dp-timebox span.dp-label-end-time {
+    opacity: 0.7;
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w.with-end-time.time-system-24 .linked-service-timeslots {
+    grid-template-columns: repeat(3, 1fr);
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w.with-end-time.time-system-24 .dp-timebox span.dp-label-end-time {
+    opacity: 0.7;
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w.without-end-time.time-system-12 .linked-service-timeslots {
+    grid-template-columns: repeat(4, 1fr);
+}
+.reschedule-calendar-wrapper .linked-service-time-selector-w.without-end-time.time-system-24 .linked-service-timeslots {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.latepoint-booking-form-element .step-datepicker-w .linked-service-time-selector-w:not(.style-timeline) .dp-timepicker-trigger:not(.selected):hover .dp-capacity, .latepoint-booking-form-element .reschedule-calendar-datepicker .linked-service-time-selector-w:not(.style-timeline) .dp-timepicker-trigger:not(.selected):hover .dp-capacity {
+    display: block;
+}
+.latepoint-booking-form-element .linked-service-timeslots {
+    display: flex;
+    justify-content: space-between;
+}
+.latepoint-booking-form-element .linked-service-timeslots .not-working-message {
+    flex: 1;
+    padding: 3px 5px;
+    text-align: center;
+    background-color: #f7e8e8;
+    color: #752f2f;
+    font-weight: 600;
+}
+.latepoint-booking-form-element .linked-service-time-selector-w {
+    display: none;
+    margin-top: 20px;
+    margin-left: -2px;
+    margin-right: -2px;
+}
+.latepoint-booking-form-element .linked-service-time-selector-w.hide-not-available-slots .dp-timebox.is-off, .latepoint-booking-form-element .linked-service-time-selector-w.hide-not-available-slots .dp-timebox.is-booked {
+    display: none;
+}
+.latepoint-booking-form-element .linked-service-time-selector-w .th-timezone {
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+}
+.latepoint-booking-form-element .linked-service-time-selector-w .th-timezone strong {
+    color: #7c85a3;
+}
+.latepoint-booking-form-element .linked-service-time-selector-w.style-timebox {
+    margin-top: 20px;
+}
+.latepoint-booking-form-element .linked-service-time-selector-w.style-timebox .linked-service-timeslots {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+}
+.latepoint-booking-form-element .linked-service-time-selector-w.style-timebox .linked-service-timeslots.slots-not-available {
+    grid-template-columns: repeat(1, 1fr) !important;
+}
+.latepoint-booking-form-element .linked-service-time-selector-w.style-timebox .linked-service-timeslots .not-working-message {
+    border-radius: 4px;
+    padding: 6px;
+}
+.latepoint-booking-form-element .linked-service-time-selector-w.style-timebox .linked-service-timeslots .dp-timebox .dp-label-capacity {
+    display: none;
+}
+.latepoint-booking-form-element .linked-service-time-selector-w.style-timebox .linked-service-timeslots .dp-timebox.is-off {
+    display: none;
+}
+.latepoint-booking-form-element .linked-service-time-selector-w.style-timebox .times-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-top: 10px;
+}
+.latepoint-booking-form-element .linked-service-time-selector-w.style-timebox .times-header .linked-service-times-header-label {
+    flex: 1;
+    margin: 0px 15px;
+    white-space: nowrap;
+}
+.latepoint-booking-form-element .linked-service-time-selector-w.style-timebox .times-header .th-line {
+    height: 1px;
+    flex: 1;
+    background-color: rgba(0, 0, 0, 0.1);
+    content: "";
+}
+.latepoint-booking-form-element .linked-service-time-selector-w.style-timeline {
+    padding-bottom: 30px;
+    flex-wrap: no-wrap;
+}
+.latepoint-booking-form-element .linked-service-time-selector-w.with-end-time.time-system-12 .linked-service-timeslots {
+    grid-template-columns: repeat(2, 1fr);
+}
+.latepoint-booking-form-element .linked-service-time-selector-w.with-end-time.time-system-12 .dp-timebox span.dp-label-end-time {
+    opacity: 0.7;
+}
+.latepoint-booking-form-element .linked-service-time-selector-w.with-end-time.time-system-24 .linked-service-timeslots {
+    grid-template-columns: repeat(3, 1fr);
+}
+.latepoint-booking-form-element .linked-service-time-selector-w.with-end-time.time-system-24 .dp-timebox span.dp-label-end-time {
+    opacity: 0.7;
+}
+.latepoint-booking-form-element .linked-service-time-selector-w.without-end-time.time-system-12 .linked-service-timeslots {
+    grid-template-columns: repeat(4, 1fr);
+}
+.latepoint-booking-form-element .linked-service-time-selector-w.without-end-time.time-system-24 .linked-service-timeslots {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-prev-btn,
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-next-btn {
+    position: absolute;
+    border: none;
+    font-size: 12px;
+    background-color: transparent !important;
+    box-shadow: none;
+    outline: none;
+    color: #111;
+    top: 55%;
+    transform: translateY(-50%);
+    padding: 0px;
+    margin: 0px;
+    line-height: 1;
+    vertical-align: middle;
+    display: inline-block;
+    cursor: pointer;
+}
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-prev-btn:focus-visible,
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-next-btn:focus-visible {
+    outline: 2px solid var(--latepoint-brand-primary) !important;
+}
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-prev-btn.os-loading,
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-next-btn.os-loading {
+    color: transparent !important;
+}
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-prev-btn.os-loading span, .reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-prev-btn.os-loading i,
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-next-btn.os-loading span,
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-next-btn.os-loading i {
+    color: transparent !important;
+}
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-prev-btn.os-loading:after,
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-next-btn.os-loading:after {
+    display: block;
+    content: "";
+    width: 14px;
+    height: 14px;
+    border-bottom: 2px solid var(--latepoint-body-color);
+    border-left: 2px solid var(--latepoint-body-color);
+    border-top: 2px solid var(--latepoint-body-color);
+    border-right: 2px solid rgba(0, 0, 0, 0);
+    border-radius: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: os-loading 700ms infinite linear;
+}
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-prev-btn:hover,
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-next-btn:hover {
+    color: var(--latepoint-brand-primary);
+}
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-prev-btn:focus,
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-next-btn:focus {
+    outline: none;
+}
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-prev-btn.disabled,
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-next-btn.disabled {
+    color: rgba(0, 0, 0, 0.1);
+}
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-prev-btn {
+    left: 10px;
+}
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-next-btn {
+    right: 10px;
+}
+
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-next-btn {
+    right: 0;
+}
+.reschedule-calendar-wrapper .os-current-month-label-w .os-linked-services-month-prev-btn {
+    left: 0;
+}
+.latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-prev-btn,
+.latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-next-btn {
+    position: absolute;
+    border: none;
+    font-size: 12px;
+    background-color: transparent !important;
+    box-shadow: none;
+    outline: none;
+    color: #111;
+    top: 55%;
+    transform: translateY(-50%);
+    padding: 0px;
+    margin: 0px;
+    line-height: 1;
+    vertical-align: middle;
+    display: inline-block;
+    cursor: pointer;
+}
+.latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-prev-btn:focus-visible,
+.latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-next-btn:focus-visible {
+    outline: 2px solid var(--latepoint-brand-primary) !important;
+}
+.latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-prev-btn.os-loading,
+.latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-next-btn.os-loading {
+    color: transparent !important;
+}
+.latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-prev-btn.os-loading span, .latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-prev-btn.os-loading i,
+.latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-next-btn.os-loading span,
+.latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-next-btn.os-loading i {
+    color: transparent !important;
+}
+.latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-prev-btn.os-loading:after,
+.latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-next-btn.os-loading:after {
+    display: block;
+    content: "";
+    width: 14px;
+    height: 14px;
+    border-bottom: 2px solid var(--latepoint-body-color);
+    border-left: 2px solid var(--latepoint-body-color);
+    border-top: 2px solid var(--latepoint-body-color);
+    border-right: 2px solid rgba(0, 0, 0, 0);
+    border-radius: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: os-loading 700ms infinite linear;
+}
+.latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-prev-btn:hover,
+.latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-next-btn:hover {
+    color: var(--latepoint-brand-primary);
+}
+.latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-prev-btn:focus,
+.latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-next-btn:focus {
+    outline: none;
+}
+.latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-prev-btn.disabled,
+.latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-next-btn.disabled {
+    color: rgba(0, 0, 0, 0.1);
+}
+.latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-prev-btn {
+    left: 10px;
+}
+.latepoint-booking-form-element .os-current-month-label-w .os-linked-services-month-next-btn {
+    right: 10px;
+}
+
+.latepoint-booking-form-element .os-linked-services-monthly-calendar-days-w {
+    display: none;
+}
+.latepoint-booking-form-element .os-linked-services-monthly-calendar-days-w.active {
+    display: block;
+}
+
+.reschedule-calendar-wrapper .os-linked-services-monthly-calendar-days-w {
+    display: none;
+}
+.reschedule-calendar-wrapper .os-linked-services-monthly-calendar-days-w.active {
+    display: block;
+}
+
+.latepoint-booking-form-element .os-linked-services-monthly-calendar-days-w.hide-if-single-slot .os-linked-services-day.os-one-slot-only .os-day-status {
+    display: none;
+}
+
+.latepoint-booking-form-element .os-linked-services-monthly-calendar-days-w.hide-if-single-slot .os-linked-services-day.selected:after {
+    font-family: "latepointIcons" !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    content: "\e903";
+    background-color: var(--latepoint-brand-primary);
+    box-shadow: 0px 0px 0px 2px #fff;
+    border-radius: 50%;
+    width: 14px;
+    line-height: 14px;
+    height: 14px;
+    bottom: 50%;
+    left: 50%;
+    font-size: 10px;
+    text-align: center;
+    position: absolute;
+    color: #fff;
+    transform: translate(11px, -10px);
+}
+

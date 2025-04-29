@@ -22,6 +22,7 @@ class OSLinkedServicesSetup
 //        add_action('admin_enqueue_scripts', array($this, 'admin_scripts'));
     }
 
+
     public function admin_scripts()
     {
         wp_enqueue_style('latepoint-linked-services-admin-style', LATEPOINT_LINKED_SERVICES_URL . 'assets/style/admin.css');
@@ -29,7 +30,7 @@ class OSLinkedServicesSetup
 
     public function scripts()
     {
-//        wp_enqueue_script('latepoint-linked-services-script', URL . 'dist/assets/js/index.js');
+        wp_enqueue_script('latepoint-linked-services-script', LATEPOINT_LINKED_SERVICES_URL . 'assets/public.js', ['jquery'], time());
         wp_enqueue_style('latepoint-linked-services-style', LATEPOINT_LINKED_SERVICES_URL . 'assets/public.css', [], time());
 
         // js options and i18n
