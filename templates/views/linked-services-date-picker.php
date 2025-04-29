@@ -62,6 +62,7 @@
                                         'weekday_name' => $day['weekday_name'] . ' - ' . $linked_day['weekday_name'],
                                         'date_range' => $day['date'] . ' - ' . $linked_day['date'],
                                         'start_date'=> $day['date'],
+                                        'linked_service_start_date' => $linked_day['date'],
                                         'time' => $time->format('g:i A'),
                                         'minutes' => $minutes,
                                 ];
@@ -75,7 +76,7 @@
 
     <div class="latepoint-link-service-date-container os-animated-parent os-items os-selectable-items">
         <?php foreach ($slots as $slot): ?>
-            <div class="latepoint-link-service-date-box os-animated-child os-item os-selectable-item" data-minutes="<?php echo $slot['minutes']?>"  data-id-holder=".latepoint_start_date" data-item-id="<?php echo $slot['start_date']?>">
+            <div class="latepoint-link-service-date-box os-animated-child os-item os-selectable-item"  data-linked-date="<?php echo $slot['linked_service_start_date']?>" data-minutes="<?php echo $slot['minutes']?>"  data-id-holder=".latepoint_start_date" data-item-id="<?php echo $slot['start_date']?>">
                 <p><?php echo htmlspecialchars($slot['weekday_name']); ?></p>
                 <small><?php echo htmlspecialchars($slot['date_range']); ?> - <?php echo htmlspecialchars($slot['time']); ?></small>
             </div>
@@ -94,22 +95,34 @@
 //    echo OsFormHelper::hidden_field('timeshift_minutes', $timeshift_minutes, [ 'class' => 'latepoint_timeshift_minutes', 'skip_id' => true]);
 //    echo OsFormHelper::hidden_field('timezone_name', $timezone_name, [ 'class' => 'latepoint_timezone_name', 'skip_id' => true]);
 //
-//    //todo: add values here
-//    echo OsFormHelper::hidden_field('booking[linked_service][start_date]', '', [ 'class' => 'latepoint_linked_service_start_date', 'skip_id' => true]);
-//    //todo: add values here
-//    echo OsFormHelper::hidden_field('booking[linked_service][start_time]', '', [ 'class' => 'latepoint_linked_service_start_time', 'skip_id' => true]);
-//    echo OsFormHelper::hidden_field('booking[linked_service][id]', $linked_services_booking->service_id, ['class' => 'latepoint_linked_service_id', 'skip_id' => true]);
+    echo OsFormHelper::hidden_field('booking[linked_service][start_date]', '', [ 'class' => 'latepoint_linked_service_start_date', 'skip_id' => true]);
+    echo OsFormHelper::hidden_field('booking[linked_service][start_time]', '', [ 'class' => 'latepoint_linked_service_start_time', 'skip_id' => true]);
+    echo OsFormHelper::hidden_field('booking[linked_service][id]', $linked_services_booking->service_id, ['class' => 'latepoint_linked_service_id', 'skip_id' => true]);
     ?>
 
     <script>
         // JS to handle box selection
         document.querySelectorAll('.latepoint-link-service-date-box').forEach(box => {
             box.addEventListener('click', function () {
-                const startDate = this.getAttribute('data-minutes');
-                const input = document.querySelector('.latepoint_start_time');
-                if (input) {
-                    input.value = startDate;
+                const time = this.getAttribute('data-minutes');
+                const date = this.getAttribute('data-linked-date');
+                // Start time
+                const start_time = document.querySelector('.latepoint_start_time');
+                if (start_time) {
+                    start_time.value = time;
                 }
+                // linked Start time
+                const linked_start_time = document.querySelector('.latepoint_linked_service_start_time');
+                if (linked_start_time) {
+                    linked_start_time.value = time;
+                }
+
+                // linked Start date
+                const linked_start_date = document.querySelector('.latepoint_linked_service_start_date');
+                if (linked_start_date) {
+                    linked_start_date.value = date;
+                }
+
             });
         });
     </script>
