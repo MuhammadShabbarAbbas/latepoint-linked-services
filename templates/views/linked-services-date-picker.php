@@ -50,6 +50,35 @@
     ];
     ?>
 
+    <?php
+        $target_date = new OsWpDateTime('now');
+        $service = OsLinkedServicesCalendarHelper::extract_dates_and_times_data($booking, $target_date, ['timezone_name' => OsTimeHelper::get_timezone_name_from_session(), 'consider_cart_items' => true]);
+        foreach ($service['months'] as $month) {
+            foreach ($month['days'] as $day) {
+                if(!$day['is_past'] && $day['bookable_slots_count'] > 0){
+                    $end_date = new OsWpDateTime($day['date']);
+                    $end_date->modify('+1 week');
+                    $end_date = $end_date->format('Y-m-d');
+                    $linked_service = OsLinkedServicesCalendarHelper::extract_dates_and_times_data($linked_services_booking, new OsWpDateTime($day['date']),['timezone_name' => OsTimeHelper::get_timezone_name_from_session(), 'consider_cart_items' => true, 'earliest_possible_booking'=> $day['date'], 'latest_possible_booking' => $end_date]);
+                    echo json_encode($linked_service);
+                    break;
+                }
+            }
+        }
+
+    //foreach by service
+            // if is not past and bookable slot is 1 or more
+            //  $linkedService = OsLinkedServicesCalendarHelper::extract_dates_and_times_data($linked_services_booking, new OsWpDateTime($booking->start_date), ['timezone_name' => OsTimeHelper::get_timezone_name_from_session(), 'consider_cart_items' => true, 'earliest_possible_booking'=> $booking->start_date, 'latest_possible_booking' => $end_date]);
+                    //new OsWpDateTime($booking->start_date) -> should be form current foreach date
+                    //'latest_possible_booking' => -> should be current foreach date + 7 days
+                    //in result you'll get same json, but the days and month will be only one.
+                    // now create html:
+
+//        $linked_service = OsLinkedServicesCalendarHelper::extract_dates_and_times_data($linked_services_booking, new OsWpDateTime($booking->start_date), ['timezone_name' => OsTimeHelper::get_timezone_name_from_session(), 'consider_cart_items' => true, 'earliest_possible_booking'=> $booking->start_date, 'latest_possible_booking' => $end_date]);
+//        echo json_encode($linked_service);
+
+
+    ?>
     <div class="latepoint-link-service-date-container">
         <?php foreach ($dates as $item): ?>
             <div class="latepoint-link-service-date-box">
