@@ -5,7 +5,7 @@
 
     .latepoint-link-service-date-container {
         display: grid;
-        grid-template-columns: repeat(2, 1fr); /* Two columns */
+        grid-template-columns: 1fr /* Two columns */
         gap: 15px; /* Space between boxes */
     }
 
@@ -18,6 +18,7 @@
         cursor: pointer;
         transition: all 0.3s ease;
         user-select: none;
+        margin-top: 10px
     }
 
     .latepoint-link-service-date-box.selected {
@@ -41,6 +42,7 @@
 
     <?php
         $slots = [];
+        $location = new OsLocationModel($booking->location_id);
         $target_date = new OsWpDateTime('now');
         $service = OsLinkedServicesCalendarHelper::extract_dates_and_times_data($booking, $target_date, ['timezone_name' => OsTimeHelper::get_timezone_name_from_session(), 'consider_cart_items' => true]);
         foreach ($service['months'] as $month) {
@@ -50,6 +52,7 @@
                     $end_date->modify('+1 week');
                     $end_date = $end_date->format('Y-m-d');
                     $linked_service = OsLinkedServicesCalendarHelper::extract_dates_and_times_data($linked_services_booking, new OsWpDateTime($day['date']),['timezone_name' => OsTimeHelper::get_timezone_name_from_session(), 'consider_cart_items' => true, 'earliest_possible_booking'=> $day['date'], 'latest_possible_booking' => $end_date]);
+//                    echo json_encode($linked_service);
                     foreach ($linked_service['months'] as $linked_month) {
                         foreach ($linked_month['days'] as $linked_day) {
                             if(!$linked_day['is_past'] && $linked_day['bookable_slots_count'] > 0){
@@ -59,8 +62,9 @@
                                 $mins = $minutes % 60;
                                 $time = DateTime::createFromFormat('H:i', sprintf('%02d:%02d', $hours, $mins));
                                 $slots[] = [
-                                        'weekday_name' => $day['weekday_name'] . ' - ' . $linked_day['weekday_name'],
-                                        'date_range' => $day['date'] . ' - ' . $linked_day['date'],
+                                        'location' => $location->name,
+                                        'weekday_name' => $day['weekday_name'] . ' & ' . $linked_day['weekday_name'],
+                                        'date_range' => $day['nice_date'] . '-' . $linked_day['nice_date'],
                                         'start_date'=> $day['date'],
                                         'linked_service_start_date' => $linked_day['date'],
                                         'time' => $time->format('g:i A'),
@@ -75,13 +79,22 @@
     ?>
 
     <div class="latepoint-link-service-date-container os-animated-parent os-items os-selectable-items">
-        <?php foreach ($slots as $slot): ?>
-            <div class="latepoint-link-service-date-box os-animated-child os-item os-selectable-item"  data-linked-date="<?php echo $slot['linked_service_start_date']?>" data-minutes="<?php echo $slot['minutes']?>"  data-id-holder=".latepoint_start_date" data-item-id="<?php echo $slot['start_date']?>">
-                <p><?php echo htmlspecialchars($slot['weekday_name']); ?></p>
-                <small><?php echo htmlspecialchars($slot['date_range']); ?> - <?php echo htmlspecialchars($slot['time']); ?></small>
-            </div>
-        <?php endforeach; ?>
+        <?php if (!empty($slots)): ?>
+            <?php foreach ($slots as $slot): ?>
+                <div class="latepoint-link-service-date-box os-animated-child os-item os-selectable-item"
+                     data-linked-date="<?php echo $slot['linked_service_start_date']; ?>"
+                     data-minutes="<?php echo $slot['minutes']; ?>"
+                     data-id-holder=".latepoint_start_date"
+                     data-item-id="<?php echo $slot['start_date']; ?>">
+                    <p><?php echo htmlspecialchars($slot['location']); ?></p>
+                    <p><?php echo htmlspecialchars($slot['weekday_name']); ?>. <?php echo htmlspecialchars($slot['date_range']); ?></p>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <p>No classes are scheduled</p>
+        <?php endif; ?>
     </div>
+
 
 
 
