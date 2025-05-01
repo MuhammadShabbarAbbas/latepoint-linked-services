@@ -88,6 +88,7 @@ class OSLinkedServicesSteps
 
     function update_service_name_for_summary($service_name, $booking_instance): string
     {
+        if(empty($booking_instance->linked_service)) return  $service_name;
         return $booking_instance->service->short_description ?? $service_name;
     }
 
@@ -108,6 +109,7 @@ class OSLinkedServicesSteps
 
     function update_nice_date_for_summary( $nice_datetime, $booking_instance, $viewer): string
     {
+        if(empty($booking_instance->linked_service)) return $nice_datetime;
         $start_date = $booking_instance->start_date; // e.g. '2025-06-02'
         $end_date = $booking_instance->linked_service->start_date ?? $start_date; // Optional fallback if end_date missing
         $start = new DateTime($start_date);
