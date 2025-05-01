@@ -38,6 +38,9 @@ class OSLinkedServicesSteps
 
         add_filter( 'latepoint_generated_params_for_booking_form', [$this, 'add_linked_service_to_booking_form_params'], 10, 2 );
 
+        add_filter('latepoint_booking_get_service_name_for_summary', [$this, 'update_service_name_for_summary'], 10, 2);
+
+
 //        add_filter( 'latepoint_cart_data_for_order_intent', [$this, 'process_custom_fields_in_booking_data_for_order_intent'] );
 
 //        add_filter( 'latepoint_get_results_as_models', [$this, 'load_custom_fields_for_model'] );
@@ -81,6 +84,11 @@ class OSLinkedServicesSteps
         }
 
         return $params;
+    }
+
+    function update_service_name_for_summary($service_name, $booking_instance): string
+    {
+        return $booking_instance->service->short_description ?? $service_name;
     }
 
     public static function process_linked_service_in_booking_data_for_order_intent(array $booking_data ): array {
