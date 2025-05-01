@@ -39,7 +39,7 @@ class OSLinkedServicesSteps
         add_filter( 'latepoint_generated_params_for_booking_form', [$this, 'add_linked_service_to_booking_form_params'], 10, 2 );
 
         add_filter('latepoint_booking_get_service_name_for_summary', [$this, 'update_service_name_for_summary'], 10, 2);
-
+        add_filter('latepoint_get_nice_datetime_for_summary', [$this, 'update_nice_date_for_summary'], 999, 3);
 
 //        add_filter( 'latepoint_cart_data_for_order_intent', [$this, 'process_custom_fields_in_booking_data_for_order_intent'] );
 
@@ -89,6 +89,23 @@ class OSLinkedServicesSteps
     function update_service_name_for_summary($service_name, $booking_instance): string
     {
         return $booking_instance->service->short_description ?? $service_name;
+    }
+
+    function update_nice_date_for_summary( $nice_datetime, $booking_instance, $viewer): string
+    {
+        $start_date = $booking_instance->start_date; // e.g. '2025-06-02'
+        $end_date = $booking_instance->linked_service->start_date ?? $start_date; // Optional fallback if end_date missing
+        $start = new DateTime($start_date);
+        $end = new DateTime($end_date);
+
+        //  Time
+        $minutes = $booking_instance->start_time;
+        $hours = floor($minutes / 60);
+        $mins = $minutes % 60;
+        $time = DateTime::createFromFormat('H:i', sprintf('%02d:%02d', $hours, $mins));
+
+        $formatted_range = $start->format('F j') . ' – ' . $end->format('F j') . ' at ' . $time->format('g:i A');
+        return $formatted_range;
     }
 
     public static function process_linked_service_in_booking_data_for_order_intent(array $booking_data ): array {
