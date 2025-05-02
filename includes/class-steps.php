@@ -88,7 +88,6 @@ class OSLinkedServicesSteps
 
     function update_service_name_for_summary($service_name, $booking_instance): string
     {
-        if(empty($booking_instance->linked_service)) return  $service_name;
         return $booking_instance->service->short_description ?? $service_name;
     }
 
