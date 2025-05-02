@@ -119,9 +119,14 @@ class OSLinkedServicesSteps
         $minutes = $booking_instance->start_time;
         $hours = floor($minutes / 60);
         $mins = $minutes % 60;
-        $time = DateTime::createFromFormat('H:i', sprintf('%02d:%02d', $hours, $mins));
+        $start_time = DateTime::createFromFormat('H:i', sprintf('%02d:%02d', $hours, $mins));
 
-        $formatted_range = $start->format('F j') . ' – ' . $end->format('F j') . ' at ' . $time->format('g:i A');
+        // Clone the start time and add duration
+        $end_time = clone $start_time;
+        $end_time->add(new DateInterval('PT' . $booking_instance->duration . 'M'));
+
+
+        $formatted_range = $start->format('F j') . ' & ' . $end->format('F j') . ' at ' . $start_time->format('g:i A') . ' - ' .  $end_time->format('g:i A');
         return $formatted_range;
     }
 
