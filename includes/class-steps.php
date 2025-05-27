@@ -36,7 +36,7 @@ class OSLinkedServicesSteps
 
         add_action('latepoint_model_set_data', [$this, 'set_linked_service_data'], 10, 2);
 
-        add_filter( 'latepoint_generated_params_for_booking_form', [$this, 'add_linked_service_to_booking_form_params'], 10, 2 );
+        add_filter('latepoint_generated_params_for_booking_form', [$this, 'add_linked_service_to_booking_form_params'], 10, 2);
 
         add_filter('latepoint_booking_get_service_name_for_summary', [$this, 'update_service_name_for_summary'], 10, 2);
         add_filter('latepoint_get_nice_datetime_for_summary', [$this, 'update_nice_date_for_summary'], 999, 3);
@@ -63,14 +63,12 @@ class OSLinkedServicesSteps
 //        add_filter( 'latepoint_cart_data_for_order_intent', [$this, 'process_linked_service_in_booking_data_for_order_intent'] );
 
 
-
         //add_action( 'latepoint_model_save', [$this, 'save_custom_fields'] ); //we don't need this one as we're using booking_created instead
 
 
         //todo must have following after completion of functionality
 //        add_filter( 'latepoint_booking_summary_service_attributes', 'OsFeatureCustomFieldsHelper::add_booking_custom_fields_to_service_attributes', 10, 2 );
-        add_filter( 'latepoint_svg_for_step_code', [$this, 'add_svg_for_booking'], 10, 2 );
-
+        add_filter('latepoint_svg_for_step_code', [$this, 'add_svg_for_booking'], 10, 2);
 
 
         //TODO: FOR THE REQGISTRATION OF LINKED SERVICE, ORDER ITEMS ARE NOT POPULATE
@@ -88,7 +86,8 @@ class OSLinkedServicesSteps
 
     function update_service_name_for_summary($service_name, $booking_instance): string
     {
-        return $booking_instance->service->short_description ?? $service_name;
+        if (!empty($booking_instance->service->short_description)) return $booking_instance->service->short_description;
+        return $service_name;
     }
 
     function add_svg_for_booking(string $svg, string $step_code)
