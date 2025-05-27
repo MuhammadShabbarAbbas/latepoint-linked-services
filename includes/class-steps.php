@@ -31,7 +31,7 @@ class OSLinkedServicesSteps
         add_filter('latepoint_should_step_be_skipped', [$this, 'should_step_be_skipped'], 10, 5);
 
 
-        add_filter('latepoint_booking_summary_formatted_booking_start_datetime', [$this, 'add_linked_service_datetime_to_active_cart_item'], 10, 2);
+//        add_filter('latepoint_booking_summary_formatted_booking_start_datetime', [$this, 'add_linked_service_datetime_to_active_cart_item'], 10, 2);
 
 
         add_action('latepoint_model_set_data', [$this, 'set_linked_service_data'], 10, 2);
@@ -77,9 +77,9 @@ class OSLinkedServicesSteps
     }
 
 
-
-    public static function add_linked_service_to_booking_form_params(array $params, OsBookingModel $booking ) {
-        if ( ! empty( $booking->linked_service ) ) {
+    public static function add_linked_service_to_booking_form_params(array $params, OsBookingModel $booking)
+    {
+        if (!empty($booking->linked_service)) {
             $params['linked_service'] = $booking->linked_service;
         }
 
@@ -91,7 +91,8 @@ class OSLinkedServicesSteps
         return $booking_instance->service->short_description ?? $service_name;
     }
 
-    function add_svg_for_booking(string $svg, string $step_code) {
+    function add_svg_for_booking(string $svg, string $step_code)
+    {
         if ($step_code == "booking__linked_service_datepicker") {
             $svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 73 73">
 					<path class="latepoint-step-svg-highlight" d="M36.270771,27.7026501h16.8071289c0.4140625,0,0.75-0.3359375,0.75-0.75s-0.3359375-0.75-0.75-0.75H36.270771 c-0.4140625,0-0.75,0.3359375-0.75,0.75S35.8567085,27.7026501,36.270771,27.7026501z"/>
@@ -106,9 +107,9 @@ class OSLinkedServicesSteps
         return $svg;
     }
 
-    function update_nice_date_for_summary( $nice_datetime, $booking_instance, $viewer): string
+    function update_nice_date_for_summary($nice_datetime, $booking_instance, $viewer): string
     {
-        if(empty($booking_instance->linked_service)) return $nice_datetime;
+        if (empty($booking_instance->linked_service)) return $nice_datetime;
         $start_date = $booking_instance->start_date; // e.g. '2025-06-02'
         $end_date = $booking_instance->linked_service->start_date ?? $start_date; // Optional fallback if end_date missing
         $start = new DateTime($start_date);
@@ -125,39 +126,40 @@ class OSLinkedServicesSteps
         $end_time->add(new DateInterval('PT' . $booking_instance->duration . 'M'));
 
 
-        $formatted_range = $start->format('F j') . ' & ' . $end->format('F j') . ' at ' . $start_time->format('g:i A') . ' - ' .  $end_time->format('g:i A');
+        $formatted_range = $start->format('F j') . ' & ' . $end->format('F j') . ' at ' . $start_time->format('g:i A') . ' - ' . $end_time->format('g:i A');
         return $formatted_range;
     }
 
-    public static function process_linked_service_in_booking_data_for_order_intent(array $booking_data ): array {
+    public static function process_linked_service_in_booking_data_for_order_intent(array $booking_data): array
+    {
 
 
         // get files from $_FILES object
-        $files = OsParamsHelper::get_file( 'booking' );
+        $files = OsParamsHelper::get_file('booking');
 
-        $custom_fields_structure = OsCustomFieldsHelper::get_custom_fields_arr( 'booking', 'agent' );
-        if ( ! isset( $booking_data['custom_fields'] ) ) {
+        $custom_fields_structure = OsCustomFieldsHelper::get_custom_fields_arr('booking', 'agent');
+        if (!isset($booking_data['custom_fields'])) {
             $booking_data['custom_fields'] = [];
         }
-        if ( $custom_fields_structure ) {
-            foreach ( $custom_fields_structure as $custom_field ) {
-                switch ( $custom_field['type'] ) {
+        if ($custom_fields_structure) {
+            foreach ($custom_fields_structure as $custom_field) {
+                switch ($custom_field['type']) {
                     case 'file_upload':
-                        if ( ! empty( $files['name']['custom_fields'][ $custom_field['id'] ] ) ) {
-                            if ( ! function_exists( 'wp_handle_upload' ) ) {
-                                require_once( ABSPATH . 'wp-admin/includes/file.php' );
+                        if (!empty($files['name']['custom_fields'][$custom_field['id']])) {
+                            if (!function_exists('wp_handle_upload')) {
+                                require_once(ABSPATH . 'wp-admin/includes/file.php');
                             }
-                            for ( $i = 0; $i < count( $files['name']['custom_fields'][ $custom_field['id'] ] ); $i ++ ) {
-                                $file   = [
-                                    'name'     => $files['name']['custom_fields'][ $custom_field['id'] ][ $i ],
-                                    'type'     => $files['type']['custom_fields'][ $custom_field['id'] ][ $i ],
-                                    'tmp_name' => $files['tmp_name']['custom_fields'][ $custom_field['id'] ][ $i ],
-                                    'error'    => $files['error']['custom_fields'][ $custom_field['id'] ][ $i ],
-                                    'size'     => $files['size']['custom_fields'][ $custom_field['id'] ][ $i ]
+                            for ($i = 0; $i < count($files['name']['custom_fields'][$custom_field['id']]); $i++) {
+                                $file = [
+                                    'name' => $files['name']['custom_fields'][$custom_field['id']][$i],
+                                    'type' => $files['type']['custom_fields'][$custom_field['id']][$i],
+                                    'tmp_name' => $files['tmp_name']['custom_fields'][$custom_field['id']][$i],
+                                    'error' => $files['error']['custom_fields'][$custom_field['id']][$i],
+                                    'size' => $files['size']['custom_fields'][$custom_field['id']][$i]
                                 ];
-                                $result = wp_handle_upload( $file, [ 'test_form' => false ] );
-                                if ( ! isset( $result['error'] ) && ! empty( $result['url'] ) ) {
-                                    $booking_data['custom_fields'][ $custom_field['id'] ] = $result['url'];
+                                $result = wp_handle_upload($file, ['test_form' => false]);
+                                if (!isset($result['error']) && !empty($result['url'])) {
+                                    $booking_data['custom_fields'][$custom_field['id']] = $result['url'];
                                 }
                             }
                         }
@@ -171,12 +173,13 @@ class OSLinkedServicesSteps
         return $booking_data;
     }
 
-    public static function save_custom_fields( $model ) {
-        if ( $model->is_new_record() ) {
+    public static function save_custom_fields($model)
+    {
+        if ($model->is_new_record()) {
             return;
         }
-        if ( $model instanceof OsBookingModel ) {
-            $model->save_meta_by_key( 'linked_service', $model->linked_service );
+        if ($model instanceof OsBookingModel) {
+            $model->save_meta_by_key('linked_service', $model->linked_service);
         }
     }
 
@@ -189,18 +192,18 @@ class OSLinkedServicesSteps
         $linked_booking->start_time = $order_booking->linked_service->start_time;
         $linked_booking->total_attendees = $order_booking->total_attendees;
         $linked_booking->service_id = $order_booking->linked_service->id;
-        $linked_booking->end_time      = $order_booking->linked_service->calculate_end_time();
-        $linked_booking->end_date      = $order_booking->linked_service->calculate_end_date();
+        $linked_booking->end_time = $order_booking->linked_service->calculate_end_time();
+        $linked_booking->end_date = $order_booking->linked_service->calculate_end_date();
         $linked_booking->agent_id = $order_booking->agent_id;
         $linked_booking->order_item_id = $order_booking->order_item_id;
         $linked_booking->customer_id = $order_booking->customer_id;
-        if($order_booking->custom_fields){
+        if ($order_booking->custom_fields) {
             $linked_booking->custom_fields = $order_booking->custom_fields;
         }
         $linked_booking->set_utc_datetimes();
-        $service                         = new OsServiceModel( $linked_booking->service_id );
-        $linked_booking->buffer_before    = $service->buffer_before;
-        $linked_booking->buffer_after     = $service->buffer_after;
+        $service = new OsServiceModel($linked_booking->service_id);
+        $linked_booking->buffer_before = $service->buffer_before;
+        $linked_booking->buffer_after = $service->buffer_after;
         $linked_booking->customer_comment = $order_booking->customer_comment;
         $result = $linked_booking->save();
 
@@ -212,122 +215,95 @@ class OSLinkedServicesSteps
 //        $a = $order_booking;
     }
 
-    public static function load_custom_fields_for_model( $model ) {
-        if (  $model instanceof OsBookingModel ) {
+    public static function load_custom_fields_for_model($model)
+    {
+        if ($model instanceof OsBookingModel) {
             $model->linked_service_test1 = 1;
         }
 
         return $model;
     }
+
     public function add_linked_services_to_order($order)
     {
-        $order_items = new OsOrderItemModel();
-        $order_items = $order_items->where(['order_id' => $order->id])->get_results_as_models();
+        $order_items = OsOrdersHelper::get_items_for_order_id($order->id);
         if (empty($order_items)) return;
-        foreach ($order_items as $order_item){
+        foreach ($order_items as $order_item) { //parse through each order item/booking
 
-            if($order_item->variant !== LATEPOINT_ITEM_VARIANT_BOOKING) continue;
-            if(empty($order_item->item_data)) continue;
+            if ($order_item->variant !== LATEPOINT_ITEM_VARIANT_BOOKING) continue;
+            if (empty($order_item->item_data)) continue;
 
-            $item_data = apply_filters('latepoint_linked_services_linked_service_item_data', json_decode($order_item->item_data)) ;
+            //used by teams plugin
+            $item_data = apply_filters('latepoint_linked_services_linked_service_item_data', json_decode($order_item->item_data));
 
             /***************save booking**************/
-            $linked_service = new OsLinkedService();
-            $linked_service->start_date = $item_data->linked_service->start_date;
-            $linked_service->id = $item_data->linked_service->id;
-
             $linked_booking = new OsBookingModel();
-            $linked_booking->start_date = $linked_service->start_date;
+            $linked_booking->start_date = $item_data->linked_service->start_date;
             $linked_booking->location_id = $item_data->location_id;
-            $linked_booking->start_time = $linked_service->start_date;
+            $linked_booking->start_time = $item_data->start_time;
             $linked_booking->total_attendees = $item_data->total_attendees;
-            $linked_booking->service_id = $linked_service->id;
-            $linked_booking->end_time      = $linked_service->calculate_end_time();
-            $linked_booking->end_date      = $linked_service->calculate_end_date();
+            $linked_booking->service_id = $item_data->linked_service->id;
+            $linked_booking->end_time = $linked_booking->calculate_end_time();
+            $linked_booking->end_date = $linked_booking->calculate_end_date();
             $linked_booking->agent_id = $item_data->agent_id;
+            $linked_booking->status = 'approved';
             $linked_booking->customer_id = $item_data->customer_id;
-            if( !empty($item_data->custom_fields)){
+            if (!empty($item_data->custom_fields)) {
                 $linked_booking->custom_fields = get_object_vars($item_data->custom_fields);
             }
             $linked_booking->set_utc_datetimes();
-            $service                         = new OsServiceModel( $linked_booking->service_id );
-            $linked_booking->buffer_before    = $service->buffer_before;
-            $linked_booking->buffer_after     = $service->buffer_after;
+            $service = new OsServiceModel($item_data->linked_service->id);
+            $linked_booking->buffer_before = $service->buffer_before;
+            $linked_booking->buffer_after = $service->buffer_after;
             $linked_booking->customer_comment = $order_item->customer_comment;
 
 
-
             /***************cart item**************/
-            $cart_item = new OsCartItemModel();
-            $cart = new OsCartModel();
-            $cart = $cart->where(['order_id' => $order->id])->get_results_as_models();
-            if(empty($cart)) {
-                $order->add_error( 'order_error', sprintf(__('Error: %s', 'latepoint'), "No cart found with order it" ));
-                return;
-            }
+//            $cart_item = new OsCartItemModel();
+//            $cart = new OsCartModel();
+//            $cart = $cart->where(['order_id' => $order->id])->get_results_as_models();
+//            if (empty($cart)) {
+//                $order->add_error('order_error', sprintf(__('Error: %s', 'latepoint'), "No cart found with order it"));
+//                return;
+//            }
 //            OsBookingHelper::build_booking_model_from_item_data();
 //            OsOrdersHelper::create_order_item_from_cart_item();
 //            OsCartsHelper::create_cart_item_from_item_data();
 //            OsCartsHelper::add_booking_to_cart()
-            $cart_item->item_data = $linked_booking->generate_params_for_booking_form();
-            $cart_item->cart_id = $cart[0]->id;
-            if (!$cart_item->save()) {
-                $order->add_error( 'order_error', sprintf(__('Error: %s', 'latepoint'), "Error saving cart" ));
-                return;
-            }
-            $linked_booking->cart_item_id = $cart_item->id;
+//            $cart_item->item_data = $linked_booking->generate_params_for_booking_form();
+//            $cart_item->cart_id = $cart[0]->id;
+//            if (!$cart_item->save()) {
+//                $order->add_error('order_error', sprintf(__('Error: %s', 'latepoint'), "Error saving cart"));
+//                return;
+//            }
+//            $linked_booking->cart_item_id = $cart_item->id;
 
             /***************order item**************/
             $new_order_item = new OsOrderItemModel();
             $new_order_item->order_id = $order_item->order_id;
             $new_order_item->variant = LATEPOINT_ITEM_VARIANT_BOOKING;
-            $new_order_item->item_data = json_encode($linked_booking->generate_params_for_booking_form());
+            $new_order_item->item_data = $linked_booking->generate_item_data();
+
             if (!$new_order_item->save()) {
-                $order->add_error( 'order_error', sprintf(__('Error: %s', 'latepoint'), "Error saving order item" ));
+                $order->add_error('order_error', sprintf(__('Error: %s', 'latepoint'), "Error saving order item"));
                 return;
             }
-
 
             $linked_booking->order_item_id = $new_order_item->id;
 
-
             if (!$linked_booking->save()) {
-                $order->add_error( 'order_error', sprintf(__('Error: %s', 'latepoint'), "Error creating registration" ));
+                $order->add_error('order_error', sprintf(__('Error: %s', 'latepoint'), "Error creating registration"));
                 return;
             }
-        }
-    }
-
-
-    public function process_custom_fields_in_booking_data_for_order_intent(array $booking_data)
-    {
-        $booking_data->linked_service_test = 1;
-        return $booking_data;
-    }
-
-
-    public static function set_custom_fields_data( $model, $data = [] ) {
-        if ( ( $model instanceof OsBookingModel ) || ( $model instanceof OsCustomerModel ) ) {
-            if ( $data && isset( $data['custom_fields'] ) ) {
-                $fields_for              = ( $model instanceof OsBookingModel ) ? 'booking' : 'customer';
-                $custom_fields_structure = OsCustomFieldsHelper::get_custom_fields_arr( $fields_for, 'agent' );
-                if ( ! isset( $model->custom_fields ) ) {
-                    $model->custom_fields = [];
-                }
-                foreach ( $data['custom_fields'] as $key => $custom_field ) {
-                    // check if data is allowed
-                    if ( isset( $custom_fields_structure[ $key ] ) ) {
-                        $model->custom_fields[ $key ] = $custom_field;
-                    }
-                }
-            }
+            //saving again order item id to include linked booking id
+            $new_order_item->update_attributes(['item_data' => $linked_booking->generate_item_data()]);
         }
     }
 
     public function set_linked_service_data($model, $data)
     {
-        if( $model instanceof OsBookingModel ){
-            $linked_service = new OsLinkedService();
+        if ($model instanceof OsBookingModel) {
+            $linked_service = new OsBookingModel();
             if (isset($data['linked_service']['start_date'])) {
                 $linked_service->start_date = $data['linked_service']['start_date'];
                 $model->linked_service = $linked_service;
@@ -338,8 +314,7 @@ class OSLinkedServicesSteps
                 $model->linked_service = $linked_service;
             }
 
-            if (isset($data['linked_service']['id']))
-            {
+            if (isset($data['linked_service']['id'])) {
                 $linked_service->id = $data['linked_service']['id'];
                 $model->linked_service = $linked_service;
             }
@@ -347,21 +322,9 @@ class OSLinkedServicesSteps
     }
 
 
-
-
-    public function add_linked_service_datetime_to_active_cart_item($booking_start_datetime, $booking)
-    {
-        if ($booking->linked_service instanceof OsLinkedService && $booking->linked_service->start_date ) {
-            $booking_start_datetime .= ',<br/>' . $booking->linked_service->get_nice_start_datetime();
-        }
-        return $booking_start_datetime;
-    }
-
-
-
     public function should_step_be_skipped(bool $skip, string $step_code, OsCartModel $cart, OsCartItemModel $cart_item, OsBookingModel $booking): bool
     {
-        if($step_code === "booking__datepicker"){
+        if ($step_code === "booking__datepicker") {
             $service = new OsServiceModel($booking->service_id);
             $linked_services = $service->get_meta_by_key('linked_services');
             $linked_services = $linked_services ? json_decode($linked_services) : [];
