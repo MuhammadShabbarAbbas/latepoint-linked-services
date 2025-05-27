@@ -86,7 +86,14 @@ class OSLinkedServicesSteps
 
     function update_service_name_for_summary($service_name, $booking_instance): string
     {
-        if (!empty($booking_instance->service->short_description)) return $booking_instance->service->short_description;
+        $route = $_POST["route_name"]; //workaround to show description on first load of modal
+        if (
+            (!empty($booking_instance->linked_service) || $route == 'steps__start')
+            && !empty($booking_instance->service->short_description)
+        ) {
+            return $booking_instance->service->short_description;
+        }
+
         return $service_name;
     }
 
