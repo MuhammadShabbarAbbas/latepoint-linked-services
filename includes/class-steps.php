@@ -303,6 +303,7 @@ class OSLinkedServicesSteps
             }
             //saving again order item id to include linked booking id
             $new_order_item->update_attributes(['item_data' => $linked_booking->generate_item_data()]);
+            do_action('latepoint_booking_created', $linked_booking);
         }
     }
 
