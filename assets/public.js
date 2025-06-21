@@ -301,3 +301,90 @@ window.os_linked_services_public = window.os_linked_services_public || {};
 
     $(app.init);
 })(window, document, jQuery, window.os_linked_services_public);
+
+
+//modify function of latepoint_init_timezone_picker to support reload of linked service step
+function latepoint_init_timezone_picker($booking_form_element) {
+
+
+    $booking_form_element.on('change', '.latepoint_timezone_name', function (e) {
+        var $field = jQuery(this);
+        var data = {
+            action: latepoint_helper.route_action,
+            route_name: latepoint_helper.change_timezone_route,
+            params: {timezone_name: jQuery(this).val()},
+            layout: 'none',
+            return_format: 'json'
+        }
+        $booking_form_element.removeClass('step-content-loaded').addClass('step-content-loading');
+        jQuery.ajax({
+            type: "post",
+            dataType: "json",
+            url: latepoint_timestamped_ajaxurl(),
+            data: data,
+            success: function (data) {
+                $booking_form_element.removeClass('step-content-loading');
+                if (data.status === "success") {
+                    // reload datepicker if its the step
+                    if($field.closest('.latepoint-booking-form-element').length){
+                        if ($field.closest('.latepoint-booking-form-element').hasClass('current-step-booking__datepicker') || $field.closest('.latepoint-booking-form-element').hasClass('current-step-booking__linked_service_datepicker')) {
+                            latepoint_reload_step($field.closest('.latepoint-booking-form-element'));
+                        }
+                    }else{
+                        latepoint_reload_reschedule_calendar($field.closest('.reschedule-calendar-datepicker'));
+                    }
+                } else {
+
+                }
+            }
+        });
+    });
+
+    if (!latepoint_helper.is_timezone_selected) {
+        const tzid = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        if (tzid) {
+            if (tzid != $booking_form_element.find('.latepoint_timezone_name').val()) $booking_form_element.find('.latepoint_timezone_name').val(tzid).trigger('change');
+        }
+    }
+
+    $booking_form_element.on('click', '.os-timezone-info-value', async function (e) {
+        let $trigger = jQuery(e.currentTarget);
+        $trigger.addClass('os-loading');
+        let $container = false;
+        if($trigger.closest('.latepoint-booking-form-element').length){
+            $container = $trigger.closest('.latepoint-booking-form-element');
+        }else{
+            $container = $trigger.closest('.reschedule-calendar-datepicker');
+        }
+        let route_name = $trigger.data('route');
+
+        let response = await jQuery.ajax({
+            type: "post",
+            dataType: "json",
+            url: latepoint_timestamped_ajaxurl(),
+            data: {
+                action: 'latepoint_route_call',
+                route_name: route_name,
+                params: {timezone_name: $container.find('.latepoint_timezone_name').val()},
+                layout: 'none',
+                return_format: 'json'
+            }
+        });
+
+        if (response.status === "success") {
+            if ($container.find('.os-timezone-selector-wrapper-with-shadow').length) {
+                $container.find('.os-timezone-selector-wrapper-with-shadow').remove();
+            }
+            if($container.hasClass('reschedule-calendar-datepicker')){
+                $container.append(response.message);
+            }else{
+                $container.find('.latepoint-form-w').append(response.message);
+            }
+            latepoint_init_timezone_picker_search($container);
+            $trigger.removeClass('os-loading');
+        } else {
+            throw new Error(response.message);
+        }
+    });
+
+}

@@ -18,7 +18,7 @@ class OSLinkedServicesSetup
      */
     public function hooks()
     {
-        add_action('wp_enqueue_scripts', array($this, 'scripts'));
+        add_action('wp_enqueue_scripts', array($this, 'scripts'), 999); // Load scripts at the last of late point
 //        add_action('admin_enqueue_scripts', array($this, 'admin_scripts'));
     }
 
