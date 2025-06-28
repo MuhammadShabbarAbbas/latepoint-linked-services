@@ -43,25 +43,27 @@
     <?php
         $slots = [];
         $location = new OsLocationModel($booking->location_id);
-        $target_date = new OsWpDateTime('now');
-        $service = OsLinkedServicesCalendarHelper::extract_dates_and_times_data($booking, $target_date, ['timezone_name' => OsTimeHelper::get_timezone_name_from_session(), 'consider_cart_items' => true]);
-        foreach ($service['months'] as $month) {
-            foreach ($month['days'] as $day) {
-                if(!$day['is_past'] && $day['bookable_slots_count'] > 0){
-                    $end_date = new OsWpDateTime($day['date']);
-                    $end_date->modify('+1 week');
-                    $end_date = $end_date->format('Y-m-d');
-                    $linked_service = OsLinkedServicesCalendarHelper::extract_dates_and_times_data($linked_services_booking, new OsWpDateTime($day['date']),['timezone_name' => OsTimeHelper::get_timezone_name_from_session(), 'consider_cart_items' => true, 'earliest_possible_booking'=> $day['date'], 'latest_possible_booking' => $end_date]);
-//                    echo json_encode($linked_service);
-                    foreach ($linked_service['months'] as $linked_month) {
-                        foreach ($linked_month['days'] as $linked_day) {
-                            if(!$linked_day['is_past'] && $linked_day['bookable_slots_count'] > 0){
+        $target_date = new OsWpDateTime('first day of this month');
 
-                                $minutes = $day['work_minutes'][0];
-                                $hours = floor($minutes / 60);
-                                $mins = $minutes % 60;
-                                $time = DateTime::createFromFormat('H:i', sprintf('%02d:%02d', $hours, $mins));
-                                $slots[] = [
+        for ($i = 0; $i < 7; $i++) {
+            $service = OsLinkedServicesCalendarHelper::extract_dates_and_times_data($booking, $target_date, ['timezone_name' => OsTimeHelper::get_timezone_name_from_session(), 'consider_cart_items' => true]);
+            foreach ($service['months'] as $month) {
+                foreach ($month['days'] as $day) {
+                    if(!$day['is_past'] && $day['bookable_slots_count'] > 0 && $day['is_target_month']){
+                        $end_date = new OsWpDateTime($day['date']);
+                        $end_date->modify('+1 week');
+                        $end_date = $end_date->format('Y-m-d');
+                        $linked_service = OsLinkedServicesCalendarHelper::extract_dates_and_times_data($linked_services_booking, new OsWpDateTime($day['date']),['timezone_name' => OsTimeHelper::get_timezone_name_from_session(), 'consider_cart_items' => true, 'earliest_possible_booking'=> $day['date'], 'latest_possible_booking' => $end_date]);
+//                    echo json_encode($linked_service);
+                        foreach ($linked_service['months'] as $linked_month) {
+                            foreach ($linked_month['days'] as $linked_day) {
+                                if(!$linked_day['is_past'] && $linked_day['bookable_slots_count'] > 0){
+
+                                    $minutes = $day['work_minutes'][0];
+                                    $hours = floor($minutes / 60);
+                                    $mins = $minutes % 60;
+                                    $time = DateTime::createFromFormat('H:i', sprintf('%02d:%02d', $hours, $mins));
+                                    $slots[] = [
                                         'location' => $location->name,
                                         'weekday_name' => $day['weekday_name'] . ' & ' . $linked_day['weekday_name'],
                                         'date_range' => $day['nice_date'] . '-' . $linked_day['nice_date'],
@@ -69,13 +71,16 @@
                                         'linked_service_start_date' => $linked_day['date'],
                                         'time' => $time->format('g:i A'),
                                         'minutes' => $minutes,
-                                ];
+                                    ];
+                                }
                             }
                         }
                     }
                 }
             }
+            $target_date->modify('first day of next month');
         }
+
     ?>
 
     <div class="latepoint-link-service-date-container os-animated-parent os-items os-selectable-items">

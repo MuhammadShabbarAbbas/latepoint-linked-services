@@ -31,7 +31,7 @@ class OsLinkedServicesCalendarHelper {
         // Default calendar settings if not provided
         $defaults = [
             'exclude_booking_ids' => [],
-            'number_of_months_to_preload' => 1,
+            'number_of_months_to_preload' => 0,
             'timezone_name' => false,
             'layout' => 'classic',
             'highlight_target_date' => false,
